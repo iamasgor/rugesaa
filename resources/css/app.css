@@ -1,0 +1,65 @@
+@import 'tailwindcss';
+
+@source '../views';
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../vendor/livewire/livewire/src/Features/SupportPagination/views/*.blade.php';
+
+@theme {
+    --font-sans: var(--family-archivo), ui-sans-serif, system-ui, 'Helvetica Neue', Arial, sans-serif;
+    --font-mono: var(--family-plex-mono), ui-monospace, Menlo, monospace;
+
+    /* RUGESAA palette, taken from the design canvas */
+    --color-ink: #14231E;
+    --color-body: #33433D;
+    --color-muted: #4B5B54;
+    --color-forest: #1D4337;
+    --color-forest-deep: #10291F;
+    --color-forest-soft: #17372C;
+    --color-forest-line: #2E4D42;
+    --color-amber: #E0A43A;
+    --color-amber-deep: #8C5A0B;
+    --color-paper: #F2F3EC;
+    --color-paper-dim: #E3E8DF;
+    --color-card: #FBFBF7;
+    --color-line: #C9D1C7;
+    --color-line-strong: #9AA8A0;
+    --color-mist: #DCE5DE;
+    --color-mist-dim: #B9C9BF;
+}
+
+@layer base {
+    a {
+        color: var(--color-forest);
+    }
+
+    a:hover {
+        color: var(--color-amber-deep);
+    }
+}
+
+/* Markdown written by admins (event descriptions, news articles). */
+@layer components {
+    .prose-rugesaa h2 {
+        @apply pt-4 text-2xl font-extrabold text-ink;
+    }
+
+    .prose-rugesaa h3 {
+        @apply pt-2 text-xl font-bold text-ink;
+    }
+
+    .prose-rugesaa ul {
+        @apply flex list-disc flex-col gap-1.5 pl-5;
+    }
+
+    .prose-rugesaa ol {
+        @apply flex list-decimal flex-col gap-1.5 pl-5;
+    }
+
+    .prose-rugesaa a {
+        @apply font-semibold underline;
+    }
+
+    .prose-rugesaa blockquote {
+        @apply border-l-4 border-amber pl-4 italic;
+    }
+}
