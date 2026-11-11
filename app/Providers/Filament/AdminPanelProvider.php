@@ -27,6 +27,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->brandName('RUGESAA Admin')
+            ->favicon(asset('favicon-32x32.png'))
             ->colors([
                 'primary' => Color::hex('#1D4337'),
                 'warning' => Color::hex('#E0A43A'),

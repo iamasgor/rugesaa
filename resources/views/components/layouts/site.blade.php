@@ -9,7 +9,8 @@
         <title>{{ $title ? $title.' — ' : '' }}RUGESAA</title>
 
         <link rel="icon" href="/favicon.ico" sizes="any">
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+        <link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32">
+        <link rel="icon" href="/favicon-512x512.png" type="image/png" sizes="512x512">
         <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
         @fonts

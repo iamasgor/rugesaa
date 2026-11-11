@@ -37,12 +37,8 @@
         </div>
     </div>
     <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-8 gap-y-3 px-4 py-3.5 sm:px-8">
-        <a href="{{ route('home') }}" class="flex items-center gap-3 text-ink no-underline hover:text-ink">
-            <x-site.logo-mark />
-            <span class="flex flex-col gap-0.5 leading-tight">
-                <span class="text-[21px] font-extrabold tracking-tight">RUGESAA</span>
-                <span class="max-w-72 text-[13px] leading-snug text-muted">Rajshahi University Geography &amp; Environmental Studies Alumni Association</span>
-            </span>
+        <a href="{{ route('home') }}" class="flex items-center no-underline">
+            <img src="{{ asset('images/rugesaa-logo.png') }}" alt="RUGESAA — Rajshahi University Geography &amp; Environmental Studies Alumni Association" width="788" height="317" class="h-14 w-auto sm:h-16">
         </a>
         <nav aria-label="Main" class="flex flex-wrap items-center gap-0.5">
             @foreach ($navigation as $item)

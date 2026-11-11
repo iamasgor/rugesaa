@@ -38,7 +38,7 @@ test('the about page hides committee and documents sections until they are added
 });
 
 test('the contact page shows the department office and hides unset association details', function () {
-    config(['rugesaa.email' => null, 'rugesaa.social' => []]);
+    config(['rugesaa.email' => null, 'rugesaa.phone' => null, 'rugesaa.social' => []]);
 
     $this->get(route('contact'))
         ->assertOk()
