@@ -3,6 +3,7 @@
 # Deploys the latest code on the server. Run from the project root on the server:
 #   ./deploy.sh            # deploys origin/main
 #   BRANCH=staging ./deploy.sh
+#   WEB_USER=nginx ./deploy.sh   # if PHP-FPM doesn't run as www-data
 #
 # Requirements on the server: git, PHP 8.5, Composer 2, Node 22 + npm, and a
 # configured .env (APP_ENV=production, APP_DEBUG=false, APP_KEY set).
@@ -12,6 +13,8 @@ set -euo pipefail
 BRANCH="${BRANCH:-main}"
 PHP="${PHP:-php}"
 COMPOSER="${COMPOSER:-composer}"
+# The user PHP-FPM runs as. Defaults to www-data when that user exists.
+WEB_USER="${WEB_USER:-$(id -u www-data >/dev/null 2>&1 && echo www-data || true)}"
 
 cd "$(dirname "$0")"
 
@@ -51,6 +54,21 @@ log "Caching config, routes, views, events and Filament"
 $PHP artisan optimize:clear
 $PHP artisan optimize
 $PHP artisan filament:optimize
+
+log "Making storage and bootstrap/cache writable by the web server"
+# optimize:clear wipes storage/framework/views, and Livewire compiles its components
+# (the member directory, every Filament page) into views/livewire on the first web
+# request. If the PHP-FPM user can't write there, those pages 500.
+mkdir -p storage/framework/{cache/data,sessions,views/livewire} storage/logs bootstrap/cache
+if [[ -n "$WEB_USER" && "$(id -un)" != "$WEB_USER" ]]; then
+    if [[ $EUID -eq 0 ]]; then
+        chown -R "$WEB_USER:$(id -gn "$WEB_USER")" storage bootstrap/cache
+    else
+        chgrp -R "$(id -gn "$WEB_USER")" storage bootstrap/cache
+    fi
+fi
+chmod -R ug+rwX storage bootstrap/cache
+find storage bootstrap/cache -type d -exec chmod g+s {} +
 
 log "Restarting queue workers"
 $PHP artisan queue:restart
