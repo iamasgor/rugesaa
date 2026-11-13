@@ -1,0 +1,779 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@source '../../../../app/Filament/**/*';
+@source '../../../../resources/views/filament/**/*';
+
+/*
+ * RUGESAA admin.
+ *
+ * Laid out like the shop back office: a full-height dark sidebar with the brand
+ * at the top, a light topbar beside it, soft rounded cards with hairline borders,
+ * and one toolbar row (search + inline filters) above every table. Colours come
+ * from the public website: forest for actions and structure, amber for the
+ * current place, warm paper neutrals.
+ *
+ * Filament's own styles live in cascade layers, so these unlayered rules win
+ * without needing !important.
+ */
+
+:root {
+    --rg-bg: #f2f3ec;
+    --rg-surface: #ffffff;
+    --rg-sunken: #f6f7f2;
+    --rg-line: #dce2d9;
+    --rg-line-strong: #c9d1c7;
+    --rg-amber: #e0a43a;
+    --rg-amber-deep: #8c5a0b;
+
+    --rg-sidebar: #10291f;
+    --rg-sidebar-raised: #17372c;
+    --rg-sidebar-line: rgb(255 255 255 / 0.08);
+    --rg-sidebar-ink: #e3e8df;
+    --rg-sidebar-ink-2: #9fb3a8;
+
+    --rg-radius-control: 10px;
+    --rg-radius-card: 16px;
+    --rg-shadow-card: 0 1px 2px rgb(20 35 30 / 0.04), 0 1px 3px rgb(20 35 30 / 0.03);
+}
+
+.dark {
+    --rg-bg: #0b1612;
+    --rg-surface: #14231e;
+    --rg-sunken: #1a2c25;
+    --rg-line: #22362e;
+    --rg-line-strong: #2e4d42;
+    --rg-amber: #e9b55a;
+
+    --rg-sidebar: #07110d;
+    --rg-sidebar-raised: #10291f;
+}
+
+/* ------------------------------------------------------------------ Shell */
+
+.fi-body {
+    background-color: var(--rg-bg);
+}
+
+/* Brand */
+
+.rg-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    height: 100%;
+}
+
+.rg-brand-mark {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 8px;
+    background: var(--rg-amber);
+    color: #10291f;
+    box-shadow: 0 4px 12px -4px rgb(224 164 58 / 0.6);
+
+    & .fi-icon {
+        width: 1.35rem;
+        height: 1.35rem;
+    }
+}
+
+.rg-brand-text {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    line-height: 1.15;
+}
+
+.rg-brand-name {
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    color: #ffffff;
+}
+
+/* The wordmark in three parts: RU (university), GES (the discipline), AA (alumni association). */
+.rg-brand-ru {
+    color: #ffffff;
+}
+
+.rg-brand-ges {
+    color: var(--rg-amber);
+}
+
+.rg-brand-aa {
+    color: #8db09c;
+}
+
+/* On the light mobile topbar, the white and pale green parts switch to forest tones. */
+.fi-topbar .rg-brand-ru {
+    color: #1d4337;
+}
+
+.fi-topbar .rg-brand-aa {
+    color: #3a6b57;
+}
+
+.dark .fi-topbar .rg-brand-ru {
+    color: #ffffff;
+}
+
+.dark .fi-topbar .rg-brand-aa {
+    color: #8db09c;
+}
+
+.rg-brand-tagline {
+    margin-top: 0.125rem;
+    font-size: 0.72rem;
+    color: var(--rg-sidebar-ink-2);
+}
+
+/* Sidebar: dark forest in both themes, so the working area is always brightest. */
+
+.fi-sidebar {
+    background-color: var(--rg-sidebar);
+    border-inline-end: 1px solid var(--rg-sidebar-line);
+}
+
+.fi-body-has-topbar .fi-sidebar-header,
+.fi-sidebar-header {
+    background: transparent;
+    box-shadow: none;
+    padding-inline: 1.25rem;
+    border-bottom: 1px solid var(--rg-sidebar-line);
+}
+
+.fi-sidebar-header .fi-logo {
+    margin-inline-start: 0;
+}
+
+.fi-sidebar-nav {
+    padding: 0.75rem;
+    gap: 1rem;
+    scrollbar-width: thin;
+    scrollbar-color: rgb(255 255 255 / 0.12) transparent;
+}
+
+.fi-sidebar-nav-groups {
+    margin-inline: 0;
+    gap: 1rem;
+}
+
+.fi-sidebar-group {
+    gap: 0.125rem;
+}
+
+.fi-sidebar-group-items {
+    gap: 0.125rem;
+}
+
+.fi-sidebar-group-btn {
+    padding: 0 0.75rem 0.375rem;
+
+    & .fi-icon {
+        color: var(--rg-sidebar-ink-2);
+    }
+}
+
+.fi-sidebar-group-label {
+    font-size: 0.66rem;
+    line-height: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: rgb(159 179 168 / 0.75);
+}
+
+.fi-sidebar-group-dropdown-trigger-btn {
+    border-radius: 0.75rem;
+
+    & .fi-icon {
+        color: var(--rg-sidebar-ink-2);
+    }
+
+    &:hover,
+    &:focus-visible {
+        background-color: rgb(255 255 255 / 0.05);
+    }
+}
+
+.fi-sidebar-group.fi-active .fi-sidebar-group-dropdown-trigger-btn .fi-icon {
+    color: var(--rg-amber);
+}
+
+.fi-sidebar-item-btn {
+    min-height: 2.5rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.75rem;
+
+    & > .fi-icon {
+        color: var(--rg-sidebar-ink-2);
+    }
+}
+
+.fi-sidebar-item-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--rg-sidebar-ink-2);
+}
+
+.fi-sidebar-item.fi-sidebar-item-has-url > .fi-sidebar-item-btn {
+    &:hover,
+    &:focus-visible {
+        background-color: rgb(255 255 255 / 0.05);
+
+        & > .fi-sidebar-item-label,
+        & > .fi-icon {
+            color: #ffffff;
+        }
+    }
+}
+
+.fi-sidebar-item.fi-active > .fi-sidebar-item-btn {
+    background-color: rgb(255 255 255 / 0.07);
+
+    /* The amber bar marks the current page, as on the public site's nav. */
+    &::before {
+        content: '';
+        position: absolute;
+        inset-block: 0.5rem;
+        inset-inline-start: -0.75rem;
+        width: 0.25rem;
+        border-start-end-radius: 999px;
+        border-end-end-radius: 999px;
+        background: var(--rg-amber);
+    }
+
+    & > .fi-icon {
+        color: var(--rg-amber);
+    }
+
+    & > .fi-sidebar-item-label {
+        font-weight: 600;
+        color: #ffffff;
+    }
+
+    & > .fi-sidebar-item-grouped-border > .fi-sidebar-item-grouped-border-part {
+        background-color: var(--rg-amber);
+    }
+}
+
+.fi-sidebar-item-grouped-border-part-not-first,
+.fi-sidebar-item-grouped-border-part-not-last {
+    background-color: var(--rg-sidebar-line);
+}
+
+.fi-sidebar-item-grouped-border-part {
+    background-color: var(--rg-sidebar-ink-2);
+}
+
+.fi-sidebar-footer,
+.fi-sidebar-header-controls::after {
+    border-color: var(--rg-sidebar-line);
+}
+
+.fi-sidebar .fi-badge {
+    background-color: rgb(224 164 58 / 0.18);
+    color: var(--rg-amber);
+    box-shadow: none;
+}
+
+/* Mobile drawer close button and any icon buttons on the dark sidebar. */
+.fi-sidebar .fi-icon-btn {
+    color: var(--rg-sidebar-ink-2);
+
+    &:hover {
+        color: #ffffff;
+        background-color: rgb(255 255 255 / 0.05);
+    }
+}
+
+/* Topbar: light bar beside the sidebar, not across it. */
+
+.fi-topbar {
+    background-color: var(--rg-surface);
+    box-shadow: 0 1px 2px rgb(20 35 30 / 0.03);
+    border-bottom: 1px solid var(--rg-line);
+    --tw-ring-shadow: 0 0 #0000;
+    padding-inline: 1.5rem;
+}
+
+/* The brand lives in the sidebar, so the topbar keeps only the collapse toggle. */
+.fi-topbar-start > a,
+.fi-topbar-start > .fi-logo {
+    display: none;
+}
+
+.fi-topbar-start {
+    margin-inline-end: 1rem;
+}
+
+@media (min-width: 64rem) {
+    .fi-body.fi-body-has-topbar {
+        & .fi-topbar-ctn {
+            position: fixed;
+            inset-block-start: 0;
+            inset-inline-end: 0;
+            inset-inline-start: var(--sidebar-width);
+            transition: inset-inline-start 160ms cubic-bezier(0.2, 0, 0.2, 1);
+        }
+
+        &.fi-body-has-sidebar-collapsible-on-desktop:has(.fi-main-sidebar:not(.fi-sidebar-open)) .fi-topbar-ctn {
+            inset-inline-start: var(--sidebar-collapsed-width);
+        }
+
+        & .fi-sidebar {
+            top: 0;
+            height: 100dvh;
+        }
+
+        & .fi-sidebar-header {
+            display: flex;
+        }
+
+        /* Collapsed: logo hidden by Filament, so centre the empty header. */
+        & .fi-sidebar:not(.fi-sidebar-open) .fi-sidebar-header {
+            padding-inline: 0;
+        }
+
+        & .fi-main-ctn {
+            padding-top: var(--topbar-height);
+        }
+    }
+}
+
+/* ------------------------------------------------------------------ Pages */
+
+.fi-main {
+    padding-block: 0.25rem 2rem;
+}
+
+.fi-page-header-main-ctn {
+    padding-block: 1.5rem;
+    row-gap: 1.25rem;
+}
+
+.fi-page-content {
+    row-gap: 1.25rem;
+}
+
+.fi-header-heading {
+    font-size: 1.5rem;
+    line-height: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.fi-header-subheading {
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    color: var(--gray-500);
+}
+
+.fi-header .fi-breadcrumbs {
+    margin-bottom: 0.25rem;
+}
+
+.fi-breadcrumbs-item-label {
+    font-size: 0.8125rem;
+}
+
+/* ------------------------------------------------------------------ Cards */
+
+.fi-section:not(.fi-section-not-contained):not(.fi-aside),
+.fi-ta-ctn,
+.fi-wi-stats-overview-stat,
+.fi-wi-chart .fi-section,
+.fi-in-repeatable-item {
+    border-radius: var(--rg-radius-card);
+    background-color: var(--rg-surface);
+    box-shadow: var(--rg-shadow-card), 0 0 0 1px var(--rg-line);
+}
+
+.fi-section:not(.fi-section-not-contained) {
+    & > .fi-section-header {
+        padding: 1rem 1.25rem;
+    }
+
+    &:not(.fi-divided) > .fi-section-content-ctn > .fi-section-content {
+        padding: 1.25rem;
+    }
+
+    & > .fi-section-content-ctn {
+        border-color: var(--rg-line);
+    }
+
+    & > .fi-section-content-ctn > .fi-section-footer {
+        border-color: var(--rg-line);
+        padding: 0.875rem 1.25rem;
+    }
+}
+
+.fi-section-header-heading {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+.fi-section-header-description {
+    font-size: 0.8125rem;
+    color: var(--gray-500);
+}
+
+/* ------------------------------------------------------------------ Tables */
+
+.fi-ta-ctn {
+    overflow: hidden;
+}
+
+.fi-ta-ctn .fi-ta-header {
+    padding: 1rem 1.25rem;
+    border-color: var(--rg-line);
+}
+
+/*
+ * Search and filters share one toolbar row, like the shop's list screens:
+ * search first, inline filters beside it, table tools pushed to the end.
+ */
+.fi-ta-header-ctn {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 0.5rem;
+    row-gap: 0.5rem;
+
+    & > .fi-ta-header {
+        flex-basis: 100%;
+    }
+
+    &:is(:has(> .fi-ta-header-toolbar:not([style*='display: none'])), :has(> .fi-ta-filters-above-content-ctn)) {
+        padding: 0.625rem 0.75rem;
+        border-bottom: 1px solid var(--rg-line);
+
+        &:has(> .fi-ta-header) {
+            padding-top: 0;
+
+            & > .fi-ta-header {
+                flex-basis: calc(100% + 1.5rem);
+                margin-inline: -0.75rem;
+            }
+        }
+    }
+}
+
+.fi-ta-ctn .fi-ta-header-toolbar {
+    display: contents;
+
+    & > :nth-child(1) {
+        order: 3;
+        margin-inline-start: auto;
+
+        /* No bulk or reorder actions: don't leave an empty row when wrapped. */
+        &:not(:has(*)) {
+            display: none;
+        }
+    }
+
+    & > :nth-child(2) {
+        order: 1;
+        margin-inline-start: 0;
+        gap: 0.5rem;
+    }
+}
+
+.fi-ta-ctn .fi-ta-filters-above-content-ctn {
+    order: 2;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    border: 0;
+
+    & .fi-ta-filters {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    & .fi-ta-filters-header {
+        order: 2;
+
+        & .fi-ta-filters-heading {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            clip-path: inset(50%);
+            white-space: nowrap;
+        }
+    }
+
+    & .fi-ta-filters > .fi-sc,
+    & .fi-ta-filters > .fi-sc > .fi-grid,
+    & .fi-ta-filters .fi-grid {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    & .fi-grid-col {
+        width: auto;
+        flex: 0 0 auto;
+    }
+
+    /* Each filter reads "Status [All ▾]" on one line. */
+    & .fi-fo-field {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    & .fi-fo-field-label-content {
+        font-size: 0.8125rem;
+        font-weight: 500;
+        color: var(--gray-500);
+        white-space: nowrap;
+    }
+
+    & .fi-input-wrp {
+        min-width: 9.5rem;
+    }
+}
+
+.fi-ta-ctn .fi-ta-search-field {
+    width: 16rem;
+    max-width: 100%;
+}
+
+.fi-ta-table {
+    & > thead > tr {
+        background-color: var(--rg-sunken);
+    }
+
+    & > thead,
+    & > tbody {
+        border-color: var(--rg-line);
+    }
+
+    & > :not(:last-child),
+    & > tbody > :not(:last-child) {
+        border-color: var(--rg-line);
+    }
+}
+
+.fi-ta-header-cell {
+    padding-block: 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--gray-500);
+    white-space: nowrap;
+
+    & .fi-ta-header-cell-sort-btn {
+        font-weight: inherit;
+    }
+}
+
+.fi-ta-row {
+    &:hover {
+        background-color: color-mix(in oklab, var(--rg-sunken) 70%, transparent);
+    }
+
+    & > .fi-ta-cell {
+        height: 3rem;
+    }
+}
+
+.fi-ta-text-item {
+    font-size: 0.875rem;
+}
+
+.fi-ta-footer,
+.fi-ta-ctn .fi-pagination {
+    border-color: var(--rg-line);
+}
+
+.fi-ta-ctn > .fi-ta-main > .fi-pagination,
+.fi-ta-ctn .fi-ta-main > :last-child.fi-pagination {
+    padding: 0.5rem 0.75rem;
+}
+
+.fi-ta-empty-state {
+    padding-block: 3.5rem;
+}
+
+.fi-ta-empty-state-icon-bg {
+    background-color: var(--rg-sunken);
+}
+
+/* ------------------------------------------------------------------ Forms */
+
+.fi-input-wrp {
+    border-radius: var(--rg-radius-control);
+    background-color: var(--rg-surface);
+    box-shadow: 0 0 0 1px var(--rg-line-strong);
+    transition:
+        box-shadow 120ms cubic-bezier(0.2, 0, 0.2, 1),
+        background-color 120ms cubic-bezier(0.2, 0, 0.2, 1);
+
+    &:not(.fi-disabled):not(.fi-invalid):hover {
+        box-shadow: 0 0 0 1px var(--gray-400);
+    }
+
+    &:not(.fi-disabled):not(:has(.fi-input-wrp-actions :focus)):focus-within {
+        box-shadow:
+            0 0 0 1px var(--primary-600),
+            0 0 0 4px color-mix(in oklab, var(--primary-600) 18%, transparent);
+    }
+
+    &.fi-invalid {
+        box-shadow: 0 0 0 1px var(--danger-600);
+
+        &:focus-within {
+            box-shadow:
+                0 0 0 1px var(--danger-600),
+                0 0 0 4px color-mix(in oklab, var(--danger-600) 15%, transparent);
+        }
+    }
+
+    &.fi-disabled {
+        background-color: var(--rg-sunken);
+    }
+
+    & .fi-input-wrp-prefix:not(.fi-inline),
+    & .fi-input-wrp-suffix:not(.fi-inline) {
+        border-color: var(--rg-line);
+    }
+}
+
+.fi-input,
+.fi-select-input,
+.fi-fo-text-input input,
+.fi-fo-select .fi-select-input-btn {
+    min-height: 2.5rem;
+    font-size: 0.875rem;
+}
+
+.fi-input::placeholder {
+    color: var(--gray-400);
+}
+
+.fi-fo-field {
+    row-gap: 0.375rem;
+}
+
+.fi-fo-field-label-content {
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
+.fi-fo-field-wrp-helper-text,
+.fi-fo-field-wrp-hint {
+    font-size: 0.75rem;
+}
+
+.fi-fo-field-wrp-error-message {
+    font-size: 0.75rem;
+}
+
+/* Checkboxes and toggles pick up the forest, not a stock blue. */
+.fi-checkbox-input:checked,
+.fi-radio-input:checked {
+    background-color: var(--primary-600);
+}
+
+/* ------------------------------------------------------------------ Buttons */
+
+.fi-btn {
+    border-radius: var(--rg-radius-control);
+    font-weight: 500;
+
+    &.fi-size-md {
+        min-height: 2.5rem;
+        padding-inline: 1rem;
+    }
+
+    &.fi-size-sm {
+        min-height: 2rem;
+    }
+}
+
+.fi-btn.fi-color-primary:not(.fi-outlined) {
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgb(29 67 55 / 0.25);
+}
+
+/* Grey buttons read as the shop's bordered secondary buttons. */
+.fi-btn:not(.fi-color):not(.fi-outlined) {
+    background-color: var(--rg-surface);
+    box-shadow: 0 1px 2px rgb(20 35 30 / 0.04), 0 0 0 1px var(--rg-line-strong);
+
+    &:hover {
+        background-color: var(--rg-sunken);
+    }
+}
+
+.fi-icon-btn {
+    border-radius: var(--rg-radius-control);
+}
+
+/* ------------------------------------------------------------------ Badges, tabs */
+
+.fi-badge {
+    border-radius: 999px;
+    padding-inline: 0.625rem;
+    font-weight: 500;
+}
+
+.fi-tabs {
+    border-radius: 0.875rem;
+    background-color: var(--rg-surface);
+    box-shadow: var(--rg-shadow-card), 0 0 0 1px var(--rg-line);
+}
+
+.fi-tabs-item.fi-active {
+    background-color: var(--primary-50);
+
+    & .fi-tabs-item-label,
+    & .fi-icon {
+        color: var(--primary-700);
+    }
+}
+
+.dark .fi-tabs-item.fi-active {
+    background-color: rgb(255 255 255 / 0.06);
+
+    & .fi-tabs-item-label,
+    & .fi-icon {
+        color: var(--rg-amber);
+    }
+}
+
+/* ------------------------------------------------------------------ Overlays */
+
+.fi-modal-window,
+.fi-dropdown-panel {
+    border-radius: var(--rg-radius-card);
+}
+
+.fi-dropdown-panel {
+    box-shadow: 0 8px 24px -8px rgb(20 35 30 / 0.14), 0 0 0 1px var(--rg-line);
+}
+
+.fi-modal-window {
+    box-shadow: 0 24px 48px -12px rgb(20 35 30 / 0.25), 0 0 0 1px var(--rg-line);
+}
+
+/* ------------------------------------------------------------------ Focus */
+
+:focus-visible {
+    outline-color: var(--primary-600);
+}
+
+::selection {
+    background: color-mix(in oklab, var(--primary-600) 22%, transparent);
+}

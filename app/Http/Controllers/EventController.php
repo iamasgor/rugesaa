@@ -6,6 +6,7 @@ use App\Enums\EventRegistrationStatus;
 use App\Enums\EventType;
 use App\Models\Event;
 use App\Models\EventRegistration;
+use Carbon\CarbonInterface;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
@@ -14,26 +15,49 @@ use Illuminate\View\View;
 
 class EventController extends Controller
 {
+    /**
+     * Upcoming events first, then the archive of past events, which visitors
+     * can narrow by type and year without affecting the upcoming list.
+     */
     public function index(Request $request): View
     {
-        $type = EventType::tryFrom((string) $request->query('type'));
-        $showPast = $request->boolean('past');
-
-        $events = Event::query()
+        $upcoming = Event::query()
             ->published()
-            ->when($showPast, fn ($query) => $query->past(), fn ($query) => $query->upcoming())
-            ->when($type, fn ($query, EventType $type) => $query->where('type', $type))
-            ->paginate(15)
+            ->upcoming()
+            ->paginate(10, pageName: 'upcoming_page')
             ->withQueryString();
 
-        $featured = $showPast || $type ? null : Event::query()->published()->upcoming()->where('is_featured', true)->first();
+        $pastYears = Event::query()
+            ->published()
+            ->past()
+            ->pluck('starts_at')
+            ->map(fn (CarbonInterface $startsAt): int => $startsAt->year)
+            ->unique()
+            ->values();
+
+        $type = EventType::tryFrom((string) $request->query('type'));
+        $year = $pastYears->contains($request->integer('year')) ? $request->integer('year') : null;
+
+        $past = Event::query()
+            ->published()
+            ->past()
+            ->when($type, fn ($query, EventType $type) => $query->where('type', $type))
+            ->when($year, fn ($query, int $year) => $query->whereYear('starts_at', $year))
+            ->withCount('photos')
+            ->paginate(10, pageName: 'past_page')
+            ->withQueryString()
+            ->fragment('past-events');
+
+        $featured = Event::query()->published()->upcoming()->where('is_featured', true)->first();
 
         return view('events.index', [
-            'events' => $events,
+            'upcoming' => $upcoming,
+            'past' => $past,
+            'pastYears' => $pastYears,
             'featured' => $featured,
             'activeType' => $type,
-            'showPast' => $showPast,
-            'registrations' => $this->registrationsFor($request, collect($events->items())->push($featured)->filter()),
+            'activeYear' => $year,
+            'registrations' => $this->registrationsFor($request, collect($upcoming->items())->push($featured)->filter()),
         ]);
     }
 
@@ -49,6 +73,7 @@ class EventController extends Controller
             'event' => $event,
             'registration' => $registration,
             'seatsLeft' => $event->seatsLeft(),
+            'photos' => $event->photos()->get(),
         ]);
     }
 

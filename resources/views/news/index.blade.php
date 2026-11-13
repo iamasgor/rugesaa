@@ -3,29 +3,26 @@
 @endphp
 
 <x-layouts.site title="Latest news" active="news">
-    <section aria-labelledby="news-title" class="mx-auto flex max-w-7xl flex-col gap-7 px-4 pt-14 sm:px-8">
-        <nav aria-label="Breadcrumb" class="flex flex-wrap gap-2 font-mono text-[13px] tracking-wider text-muted">
-            <a href="{{ route('home') }}">Home</a><span aria-hidden="true">/</span><span>News</span>
+    <x-site.page-hero
+        title="Latest news"
+        breadcrumb="News"
+        intro="What alumni are doing and what's new in the department.">
+        <nav aria-label="News categories" class="flex flex-wrap gap-2 pt-2">
+            @foreach (['' => 'All'] + collect(NewsCategory::cases())->mapWithKeys(fn ($category) => [$category->value => $category->getLabel()])->all() as $value => $label)
+                @php($isActive = ($activeCategory?->value ?? '') === $value)
+                <a href="{{ route('news.index', array_filter(['category' => $value])) }}"
+                   @if ($isActive) aria-current="page" @endif
+                   @class([
+                       'flex min-h-11 items-center rounded-full border px-4 text-[15px] no-underline',
+                       'border-amber bg-amber font-semibold text-ink hover:text-ink' => $isActive,
+                       'border-forest-line text-paper hover:border-amber hover:text-paper' => ! $isActive,
+                   ])>{{ $label }}</a>
+            @endforeach
         </nav>
-        <div class="flex flex-wrap items-end justify-between gap-6 border-b-2 border-ink pb-7">
-            <h1 id="news-title" class="text-[clamp(52px,7vw,112px)] leading-[0.9] font-extrabold tracking-tighter">Latest news</h1>
-            <nav aria-label="News categories" class="flex flex-wrap gap-2">
-                @foreach (['' => 'All'] + collect(NewsCategory::cases())->mapWithKeys(fn ($category) => [$category->value => $category->getLabel()])->all() as $value => $label)
-                    @php($isActive = ($activeCategory?->value ?? '') === $value)
-                    <a href="{{ route('news.index', array_filter(['category' => $value])) }}"
-                       @if ($isActive) aria-current="page" @endif
-                       @class([
-                           'flex min-h-11 items-center rounded-full px-4 text-[15px] no-underline',
-                           'bg-ink font-semibold text-paper hover:text-paper' => $isActive,
-                           'border border-line-strong text-ink hover:border-forest hover:text-ink' => ! $isActive,
-                       ])>{{ $label }}</a>
-                @endforeach
-            </nav>
-        </div>
-    </section>
+    </x-site.page-hero>
 
     @if ($featured)
-        <section aria-label="Featured story" class="mx-auto max-w-7xl px-4 pt-10 sm:px-8">
+        <section aria-label="Featured story" class="mx-auto max-w-7xl px-4 pt-16 sm:px-8">
             <a href="{{ route('news.show', $featured) }}" class="group grid grid-cols-1 items-center gap-10 text-ink no-underline hover:text-ink lg:grid-cols-2">
                 @if ($featured->coverImageUrl())
                     <img src="{{ $featured->coverImageUrl() }}" alt="{{ $featured->cover_image_alt }}" class="block aspect-[3/2] w-full rounded-sm bg-[#3C5F53] object-cover">

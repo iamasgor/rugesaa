@@ -22,7 +22,7 @@
         @elseif ($registration?->needsPayment())
             <a href="{{ route('events.show', $event) }}" class="flex min-h-11 items-center rounded-xs bg-amber px-5 text-[15px] font-bold text-ink no-underline hover:text-ink">Complete payment</a>
         @else
-            <a href="{{ route('events.show', $event) }}" aria-label="Details and RSVP for {{ $event->title }}" class="flex min-h-11 items-center rounded-xs bg-forest px-5.5 text-[15px] font-bold text-paper no-underline hover:bg-ink hover:text-paper">{{ $event->starts_at->isFuture() ? 'RSVP' : 'Details' }}</a>
+            <a href="{{ route('events.show', $event) }}" aria-label="Details and RSVP for {{ $event->title }}" class="flex min-h-11 items-center rounded-xs bg-forest px-5.5 text-[15px] font-bold text-paper no-underline hover:bg-ink hover:text-paper">{{ $event->starts_at->isFuture() ? 'RSVP' : (($event->photos_count ?? 0) > 0 ? 'View photos' : 'Details') }}</a>
         @endif
     </div>
 </li>

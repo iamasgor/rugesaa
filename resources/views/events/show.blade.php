@@ -20,11 +20,11 @@
                 @endunless
             </div>
             <h1 id="event-title" class="max-w-4xl text-[clamp(40px,5vw,72px)] leading-[0.98] font-extrabold tracking-tight text-balance">{{ $event->title }}</h1>
-            <p class="max-w-2xl text-[19px] leading-relaxed text-mist">{{ $event->summary }}</p>
+            <p class="text-[19px] leading-relaxed text-mist">{{ $event->summary }}</p>
         </div>
     </section>
 
-    <div class="mx-auto flex max-w-7xl flex-wrap items-start gap-x-16 gap-y-12 px-4 pt-14 pb-28 sm:px-8">
+    <div class="mx-auto flex max-w-7xl flex-wrap items-start gap-x-16 gap-y-12 px-4 pt-14 sm:px-8">
         <div class="flex min-w-0 flex-[999_1_560px] flex-col gap-10">
             @if ($event->coverImageUrl())
                 <img src="{{ $event->coverImageUrl() }}" alt="" class="aspect-[16/9] w-full rounded-sm bg-paper-dim object-cover">
@@ -119,4 +119,45 @@
             <a href="{{ route('events.calendar', $event) }}" class="border-t border-line pt-4 text-[15px] font-semibold">Add to calendar</a>
         </aside>
     </div>
+
+    @if (filled($event->committee))
+        <section aria-labelledby="committee-title" class="mx-auto flex max-w-7xl flex-col gap-6 px-4 pt-20 sm:px-8">
+            <h2 id="committee-title" class="text-[28px] font-extrabold">Organising committee</h2>
+            <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                @foreach ($event->committee as $member)
+                    <li class="flex items-center gap-4 rounded-sm border border-line bg-card p-4">
+                        @if (filled($member['photo_path'] ?? null))
+                            <img src="{{ Storage::disk('public')->url($member['photo_path']) }}" alt="" loading="lazy" class="size-16 shrink-0 rounded-full bg-paper-dim object-cover">
+                        @else
+                            <span aria-hidden="true" class="flex size-16 shrink-0 items-center justify-center rounded-full bg-forest text-xl font-bold text-paper">{{ Str::of($member['name'])->explode(' ')->filter()->take(2)->map(fn ($part) => Str::upper(Str::substr($part, 0, 1)))->implode('') }}</span>
+                        @endif
+                        <div class="flex min-w-0 flex-col gap-0.5">
+                            <span class="font-mono text-[12px] tracking-[0.1em] text-amber-deep uppercase">{{ $member['role'] }}</span>
+                            <span class="text-[17px] leading-tight font-bold">{{ $member['name'] }}</span>
+                            @if (filled($member['batch'] ?? null))
+                                <span class="text-[14px] text-muted">Batch {{ $member['batch'] }}</span>
+                            @endif
+                            @if (filled($member['phone'] ?? null))
+                                <a href="tel:{{ preg_replace('/[^0-9+]/', '', $member['phone']) }}" class="text-[14px] font-semibold">{{ $member['phone'] }}</a>
+                            @endif
+                        </div>
+                    </li>
+                @endforeach
+            </ul>
+        </section>
+    @endif
+
+    @if ($photos->isNotEmpty())
+        <section aria-labelledby="photos-title" class="mx-auto flex max-w-7xl flex-col gap-6 px-4 pt-20 sm:px-8">
+            <div class="flex flex-wrap items-baseline justify-between gap-3">
+                <h2 id="photos-title" class="text-[28px] font-extrabold">Photos</h2>
+                <span class="font-mono text-[13px] text-muted">{{ trans_choice('{1} :count photo|[2,*] :count photos', $photos->count()) }}</span>
+            </div>
+            <x-gallery.photo-grid :photos="$photos" />
+        </section>
+
+        <x-gallery.lightbox />
+    @endif
+
+    <div class="pb-28"></div>
 </x-layouts.site>

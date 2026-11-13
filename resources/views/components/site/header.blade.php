@@ -5,7 +5,8 @@
     $navigation = [
         ['id' => 'home', 'label' => 'Home', 'href' => route('home')],
         ['id' => 'about', 'label' => 'About', 'href' => route('about')],
-        ['id' => 'events', 'label' => 'Events & Reunions', 'href' => route('events.index')],
+        ['id' => 'events', 'label' => 'Events', 'href' => route('events.index')],
+        ['id' => 'gallery', 'label' => 'Gallery', 'href' => route('gallery.index')],
         ['id' => 'membership', 'label' => 'Membership', 'href' => route('membership')],
         ['id' => 'directory', 'label' => 'Directory', 'href' => route('directory')],
         ['id' => 'news', 'label' => 'News', 'href' => route('news.index')],

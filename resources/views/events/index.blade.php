@@ -2,10 +2,10 @@
     use App\Enums\EventType;
 @endphp
 
-<x-layouts.site title="Events & reunions" active="events">
+<x-layouts.site title="Events" active="events">
     <x-site.page-hero
-        title="Events & reunions"
-        breadcrumb="Events & Reunions"
+        title="Events"
+        breadcrumb="Events"
         intro="Reunions, webinars, field days and career evenings. Register online — we'll email your confirmation and the joining link." />
 
     @if ($featured)
@@ -42,43 +42,78 @@
         </section>
     @endif
 
-    <section aria-labelledby="list-title" class="mx-auto flex max-w-7xl flex-col gap-7 px-4 pt-22 sm:px-8">
-        <div class="flex flex-wrap items-end justify-between gap-4">
-            <div class="flex flex-col gap-3">
-                <x-site.eyebrow>Calendar</x-site.eyebrow>
-                <h2 id="list-title" class="text-[clamp(32px,3.6vw,48px)] leading-[1.02] font-extrabold tracking-tight">{{ $showPast ? 'Past events' : 'All upcoming events' }}</h2>
-            </div>
-            <a href="{{ $showPast ? route('events.index') : route('events.index', ['past' => 1]) }}" class="text-[15px] font-semibold">{{ $showPast ? '← Upcoming events' : 'Past events →' }}</a>
+    <section aria-labelledby="upcoming-title" class="mx-auto flex max-w-7xl flex-col gap-7 px-4 pt-22 sm:px-8">
+        <div class="flex flex-col gap-3">
+            <x-site.eyebrow>Calendar</x-site.eyebrow>
+            <h2 id="upcoming-title" class="text-[clamp(32px,3.6vw,48px)] leading-[1.02] font-extrabold tracking-tight">Upcoming events</h2>
         </div>
-        <nav aria-label="Filter events by type" class="flex flex-wrap gap-2">
-            @foreach ([null => 'All events'] + collect(EventType::cases())->mapWithKeys(fn ($type) => [$type->value => $type->pluralLabel()])->all() as $value => $label)
-                @php($isActive = ($activeType?->value ?? '') === (string) $value)
-                <a href="{{ route('events.index', array_filter(['type' => $value ?: null, 'past' => $showPast ? 1 : null])) }}"
-                   @if ($isActive) aria-current="true" @endif
-                   @class([
-                       'flex min-h-11 items-center rounded-full border px-4.5 text-[15px] no-underline',
-                       'border-ink bg-ink font-semibold text-paper hover:text-paper' => $isActive,
-                       'border-line-strong bg-card font-medium text-ink hover:border-forest hover:text-ink' => ! $isActive,
-                   ])>{{ $label }}</a>
-            @endforeach
-        </nav>
-        @if ($events->isEmpty())
-            <p class="py-8 text-base text-muted">Nothing here yet — check back soon or <a href="{{ route('contact') }}">suggest an event</a>.</p>
+        @if ($upcoming->isEmpty())
+            <p class="py-8 text-base text-muted">No upcoming events right now — check back soon or <a href="{{ route('contact') }}">suggest an event</a>.</p>
         @else
             <ul class="flex flex-col border-t border-line">
-                @foreach ($events as $event)
+                @foreach ($upcoming as $event)
                     <x-event.row :event="$event" :registration="$registrations->get($event->id)" />
                 @endforeach
             </ul>
-            {{ $events->links() }}
+            {{ $upcoming->links() }}
         @endif
     </section>
 
-    <section aria-labelledby="host-title" class="mx-auto max-w-7xl px-4 pt-24 pb-28 sm:px-8">
-        <div class="flex flex-col gap-3.5 rounded-sm bg-ink p-9 text-paper lg:max-w-2xl">
-            <h2 id="host-title" class="text-[28px] leading-tight font-extrabold">Planning a batch reunion?</h2>
-            <p class="text-base leading-relaxed text-mist">We'll help with the guest list, a venue on campus, registration and fee collection.</p>
-            <a href="{{ route('contact') }}" class="mt-2 flex min-h-12 items-center self-start rounded-xs bg-amber px-5.5 text-base font-bold text-ink no-underline hover:text-ink">Propose a reunion</a>
+    @php
+        $pastFilterUrl = fn (array $changes): string => route('events.index', array_filter([
+            'type' => $activeType?->value,
+            'year' => $activeYear,
+            ...$changes,
+        ])).'#past-events';
+
+        $pillClasses = fn (bool $isActive): string => \Illuminate\Support\Arr::toCssClasses([
+            'flex min-h-11 items-center rounded-full border px-4.5 text-[15px] no-underline',
+            'border-ink bg-ink font-semibold text-paper hover:text-paper' => $isActive,
+            'border-line-strong bg-card font-medium text-ink hover:border-forest hover:text-ink' => ! $isActive,
+        ]);
+    @endphp
+
+    <section id="past-events" aria-labelledby="past-title" class="mx-auto flex max-w-7xl scroll-mt-6 flex-col gap-7 px-4 pt-22 pb-28 sm:px-8">
+        <div class="flex flex-col gap-3">
+            <x-site.eyebrow>Archive</x-site.eyebrow>
+            <h2 id="past-title" class="text-[clamp(32px,3.6vw,48px)] leading-[1.02] font-extrabold tracking-tight">Past events</h2>
         </div>
+
+        <div class="flex flex-col gap-4">
+            <nav aria-label="Filter past events by type" class="flex flex-wrap items-center gap-2">
+                <span class="w-14 font-mono text-[13px] tracking-wide text-muted uppercase">Type</span>
+                @foreach ([null => 'All types'] + collect(EventType::cases())->mapWithKeys(fn ($type) => [$type->value => $type->pluralLabel()])->all() as $value => $label)
+                    @php($isActive = ($activeType?->value ?? '') === (string) $value)
+                    <a href="{{ $pastFilterUrl(['type' => $value ?: null]) }}" @if ($isActive) aria-current="true" @endif class="{{ $pillClasses($isActive) }}">{{ $label }}</a>
+                @endforeach
+            </nav>
+
+            @if ($pastYears->count() > 1)
+                <nav aria-label="Filter past events by year" class="flex flex-wrap items-center gap-2">
+                    <span class="w-14 font-mono text-[13px] tracking-wide text-muted uppercase">Year</span>
+                    <a href="{{ $pastFilterUrl(['year' => null]) }}" @if ($activeYear === null) aria-current="true" @endif class="{{ $pillClasses($activeYear === null) }}">All years</a>
+                    @foreach ($pastYears as $year)
+                        <a href="{{ $pastFilterUrl(['year' => $year]) }}" @if ($activeYear === $year) aria-current="true" @endif class="{{ $pillClasses($activeYear === $year) }}">{{ $year }}</a>
+                    @endforeach
+                </nav>
+            @endif
+        </div>
+
+        @if ($past->isEmpty())
+            <p class="py-8 text-base text-muted">
+                @if ($activeType || $activeYear)
+                    No past events match these filters. <a href="{{ route('events.index') }}#past-events">Clear filters</a>
+                @else
+                    No past events yet.
+                @endif
+            </p>
+        @else
+            <ul class="flex flex-col border-t border-line">
+                @foreach ($past as $event)
+                    <x-event.row :event="$event" />
+                @endforeach
+            </ul>
+            {{ $past->links() }}
+        @endif
     </section>
 </x-layouts.site>

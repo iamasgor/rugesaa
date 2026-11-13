@@ -1,23 +1,25 @@
 <x-layouts.site :title="$post->title" active="news">
     <article aria-labelledby="post-title">
-        <header class="mx-auto flex max-w-4xl flex-col gap-5 px-4 pt-14 sm:px-8">
-            <nav aria-label="Breadcrumb" class="flex flex-wrap gap-2 font-mono text-[13px] tracking-wider text-muted">
-                <a href="{{ route('home') }}">Home</a><span aria-hidden="true">/</span>
-                <a href="{{ route('news.index') }}">News</a><span aria-hidden="true">/</span>
-                <a href="{{ route('news.index', ['category' => $post->category->value]) }}">{{ $post->category->getLabel() }}</a>
-            </nav>
-            @unless ($post->isPublished())
-                <span class="self-start rounded-xs bg-amber px-2.5 py-1 text-[13px] font-bold text-ink">{{ $post->published_at ? 'Scheduled for '.$post->published_at->format('j M Y, g:i A') : 'Draft' }} — only admins can see this</span>
-            @endunless
-            <h1 id="post-title" class="text-[clamp(38px,5vw,68px)] leading-[1.0] font-extrabold tracking-tight text-balance">{{ $post->title }}</h1>
-            <p class="text-xl leading-relaxed text-body">{{ $post->excerpt }}</p>
-            <p class="font-mono text-[13px] text-muted">
-                {{ $post->published_at?->format('j F Y') ?? 'Not published' }} · {{ $post->readingMinutes() }} min read
-            </p>
+        <header class="bg-forest text-paper">
+            <div class="mx-auto flex max-w-7xl flex-col gap-5 px-4 pt-16 pb-18 sm:px-8">
+                <nav aria-label="Breadcrumb" class="flex flex-wrap gap-2 font-mono text-[13px] tracking-wider text-mist-dim">
+                    <a href="{{ route('home') }}" class="text-mist">Home</a><span aria-hidden="true">/</span>
+                    <a href="{{ route('news.index') }}" class="text-mist">News</a><span aria-hidden="true">/</span>
+                    <a href="{{ route('news.index', ['category' => $post->category->value]) }}" class="text-mist">{{ $post->category->getLabel() }}</a>
+                </nav>
+                @unless ($post->isPublished())
+                    <span class="self-start rounded-xs bg-amber px-2.5 py-1 text-[13px] font-bold text-ink">{{ $post->published_at ? 'Scheduled for '.$post->published_at->format('j M Y, g:i A') : 'Draft' }} — only admins can see this</span>
+                @endunless
+                <h1 id="post-title" class="text-[clamp(38px,5vw,68px)] leading-[1.0] font-extrabold tracking-tight text-balance">{{ $post->title }}</h1>
+                <p class="text-xl leading-relaxed text-mist">{{ $post->excerpt }}</p>
+                <p class="font-mono text-[13px] text-mist-dim">
+                    {{ $post->published_at?->format('j F Y') ?? 'Not published' }} · {{ $post->readingMinutes() }} min read
+                </p>
+            </div>
         </header>
 
         @if ($post->coverImageUrl())
-            <figure class="mx-auto max-w-6xl px-4 pt-10 sm:px-8">
+            <figure class="mx-auto max-w-7xl px-4 pt-14 sm:px-8">
                 <img src="{{ $post->coverImageUrl() }}" alt="{{ $post->cover_image_alt }}" class="aspect-[16/9] w-full rounded-sm bg-paper-dim object-cover">
             </figure>
         @endif

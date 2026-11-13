@@ -27,7 +27,7 @@
                 <h2 class="text-2xl leading-tight font-extrabold">Ground Floor, Sir Jagadish Chandra Bose Academic Building</h2>
                 <p class="text-base leading-normal text-body">University of Rajshahi, Rajshahi 6205, Bangladesh</p>
                 <div class="flex flex-wrap gap-x-4 gap-y-1.5 font-mono text-[13px] text-muted">
-                    <span>24.3715° N, 88.6364° E</span>
+                    <span>{{ round((float) $department['latitude'], 4) }}° N, {{ round((float) $department['longitude'], 4) }}° E</span>
                     <span>Plus code 9JCP+JH2</span>
                 </div>
                 <div class="flex flex-wrap gap-2.5 pt-1.5">

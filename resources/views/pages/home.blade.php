@@ -1,17 +1,20 @@
 @php
     $sectionTitle = 'text-[clamp(34px,4vw,52px)] leading-[1.02] font-extrabold tracking-tight';
+    ['hero' => $hero, 'engage' => $engage, 'benefits' => $benefits, 'events' => $eventsCopy, 'news' => $newsCopy, 'join' => $join, 'contact' => $contactCopy] = $content;
 @endphp
 
 <x-layouts.site active="home">
     <section aria-labelledby="hero-title" class="relative flex min-h-[660px] items-end overflow-hidden bg-forest text-paper">
-        <img src="{{ asset('images/hero.jpg') }}" alt="" class="absolute inset-0 size-full object-cover object-[center_58%]">
+        <img src="{{ App\Enums\SitePage::imageUrl($hero['image'], 'images/hero.jpg') }}" alt=""" class="absolute inset-0 size-full object-cover object-[center_58%]">
         <div aria-hidden="true" class="absolute inset-0 bg-[linear-gradient(90deg,rgba(16,41,31,0.9)_0%,rgba(16,41,31,0.72)_42%,rgba(16,41,31,0.12)_78%)]"></div>
         <x-site.contours viewBox="0 0 900 640" aspect="xMinYMax slice" origin="120 600" :rings="[[0.6, 0], [1.1, 8], [1.6, 16], [2.1, 24], [2.6, 32], [3.1, 40], [3.6, 48]]" />
         <div class="relative mx-auto w-full max-w-7xl px-4 pt-34 pb-24 sm:px-8">
             <div class="flex max-w-2xl flex-col gap-6">
-                <x-site.eyebrow tone="text-amber">Since 1955 · 24.3715° N, 88.6364° E</x-site.eyebrow>
-                <h1 id="hero-title" class="text-[clamp(52px,7vw,104px)] leading-[0.95] font-extrabold tracking-tighter text-balance">Stay on the map.</h1>
-                <p class="text-xl leading-relaxed text-pretty text-[#E6EDE7]">The alumni network of the Department of Geography &amp; Environmental Studies, University of Rajshahi. Find your batchmates, mentor the next cohort and come home for reunions.</p>
+                @if (filled($hero['eyebrow']))
+                    <x-site.eyebrow tone="text-amber">{{ $hero['eyebrow'] }}</x-site.eyebrow>
+                @endif
+                <h1 id="hero-title" class="text-[clamp(52px,7vw,104px)] leading-[0.95] font-extrabold tracking-tighter text-balance">{{ $hero['title'] }}</h1>
+                <p class="text-xl leading-relaxed text-pretty text-[#E6EDE7]">{{ $hero['intro'] }}</p>
                 <div class="flex flex-wrap gap-3 pt-1">
                     <a href="{{ route('register') }}" class="flex min-h-13 items-center gap-2.5 rounded-xs bg-amber px-6.5 text-[17px] font-bold text-ink no-underline hover:text-ink">
                         Join the network
@@ -26,18 +29,19 @@
     <section aria-labelledby="engage-title" class="bg-[#ECEEE6]">
         <div class="mx-auto flex max-w-7xl flex-col gap-12 px-4 pt-22 pb-24 sm:px-8">
             <div class="flex flex-col items-center gap-3 text-center">
-                <x-site.eyebrow>Get involved</x-site.eyebrow>
-                <h2 id="engage-title" class="text-[clamp(32px,3.6vw,46px)] leading-[1.05] font-extrabold tracking-tight">Three ways to stay connected</h2>
+                <x-site.eyebrow>{{ $engage['eyebrow'] }}</x-site.eyebrow>
+                <h2 id="engage-title" class="text-[clamp(32px,3.6vw,46px)] leading-[1.05] font-extrabold tracking-tight">{{ $engage['title'] }}</h2>
             </div>
             @php
-                $ways = [
-                    ['title' => 'Find your batchmates', 'body' => 'Search former classmates by batch, specialization, profession or location.', 'cta' => 'Search directory', 'href' => route('directory'),
+                $wayLinks = [
+                    ['href' => route('directory'),
                         'icon' => '<circle cx="20" cy="20" r="13"></circle><path d="M29.5 29.5L42 42"></path><circle cx="20" cy="16.5" r="4"></circle><path d="M12.5 27a8.5 8.5 0 0 1 15 0"></path>'],
-                    ['title' => 'Attend an event', 'body' => 'Reunions, webinars and field days on one calendar, with online registration.', 'cta' => 'Find events', 'href' => route('events.index'),
+                    ['href' => route('events.index'),
                         'icon' => '<rect x="5" y="9" width="34" height="31" rx="3"></rect><path d="M5 18h34M14 5v8M30 5v8"></path><path d="M11 24h4M19 24h4M27 24h4M11 31h4M19 31h4"></path><circle cx="36" cy="36" r="7" fill="#FFFFFF"></circle><path d="M32.8 36l2.2 2.2 4-4.2"></path>'],
-                    ['title' => 'Become a member', 'body' => 'Register once, get verified by the committee and unlock the members portal.', 'cta' => 'Register', 'href' => route('register'),
+                    ['href' => route('register'),
                         'icon' => '<rect x="6" y="10" width="36" height="28" rx="3"></rect><circle cx="17" cy="22" r="5"></circle><path d="M10 33a7.5 7.5 0 0 1 14 0"></path><path d="M28 19h9M28 25h9M28 31h6"></path>'],
                 ];
+                $ways = collect(array_values($engage['items']))->take(count($wayLinks))->map(fn (array $item, int $index): array => $item + $wayLinks[$index]);
             @endphp
             <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
                 @foreach ($ways as $way)
@@ -54,14 +58,14 @@
 
     <section aria-labelledby="benefits-title" class="mx-auto flex max-w-7xl flex-col gap-12 px-4 py-26 sm:px-8">
         <div class="flex flex-col items-center gap-4 text-center">
-            <x-site.eyebrow>Member benefits</x-site.eyebrow>
-            <h2 id="benefits-title" class="{{ $sectionTitle }}">Your network works for you</h2>
-            <p class="max-w-xl text-[17px] leading-relaxed text-body">Register once to unlock the members portal: the alumni directory, your membership record and early reunion booking.</p>
+            <x-site.eyebrow>{{ $benefits['eyebrow'] }}</x-site.eyebrow>
+            <h2 id="benefits-title" class="{{ $sectionTitle }}">{{ $benefits['title'] }}</h2>
+            <p class="max-w-xl text-[17px] leading-relaxed text-body">{{ $benefits['intro'] }}</p>
         </div>
         <div class="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-2">
             <form method="GET" action="{{ route('directory') }}" aria-labelledby="dir-title" class="flex flex-col gap-3.5 rounded-sm bg-paper-dim p-7">
-                <h3 id="dir-title" class="text-[22px] font-bold">Where did your batchmates end up?</h3>
-                <p class="text-[15px] leading-normal text-body">Search by name, batch, specialization, profession or city. The directory is open to verified members.</p>
+                <h3 id="dir-title" class="text-[22px] font-bold">{{ $benefits['directory_title'] }}</h3>
+                <p class="text-[15px] leading-normal text-body">{{ $benefits['directory_body'] }}</p>
                 <label for="home-q" class="text-sm font-semibold">Name or keyword</label>
                 <input id="home-q" name="search" type="search" placeholder="e.g. hydrology, Rahman, World Bank" class="min-h-12 rounded-xs border border-line-strong bg-white px-3.5 text-base">
                 <button type="submit" class="mt-auto flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-xs bg-forest text-base font-bold text-paper hover:bg-ink">
@@ -70,9 +74,9 @@
                 </button>
             </form>
             <div class="flex flex-col gap-5 rounded-sm bg-ink p-7 text-paper">
-                <h3 class="text-[22px] font-bold">How membership works</h3>
+                <h3 class="text-[22px] font-bold">{{ $benefits['steps_title'] }}</h3>
                 <ol class="flex flex-col gap-4">
-                    @foreach (['Register with your batch, student ID and current work.', 'Pay the fee online with bKash, Nagad, Rocket or card. Students join free.', 'The committee checks your batch against department records and activates your membership.'] as $step)
+                    @foreach ($benefits['steps'] as $step)
                         <li class="grid grid-cols-[36px_minmax(0,1fr)] items-start gap-3.5">
                             <span class="flex size-8 items-center justify-center rounded-full border-[1.5px] border-amber font-mono text-[13px] text-amber">{{ $loop->iteration }}</span>
                             <span class="text-base leading-normal text-mist">{{ $step }}</span>
@@ -89,7 +93,7 @@
 
     <section aria-labelledby="reunion-title" class="bg-forest text-paper">
         <div class="grid grid-cols-1 lg:grid-cols-2">
-            <img src="{{ $featuredEvent?->coverImageUrl() ?? asset('images/reunion.jpg') }}" alt="" class="block size-full min-h-[460px] object-cover object-[center_85%]">
+            <img src="{{ $featuredEvent?->coverImageUrl() ?? App\Enums\SitePage::imageUrl($eventsCopy['image'], 'images/reunion.jpg') }}" alt="" class="block size-full min-h-[460px] object-cover object-[center_85%]">
             <div class="flex flex-col justify-center gap-5 px-6 py-18 sm:px-16 lg:pr-[clamp(32px,6vw,96px)]">
                 @if ($featuredEvent)
                     <x-site.eyebrow tone="text-amber">Next {{ strtolower($featuredEvent->type->getLabel()) }} · {{ $featuredEvent->starts_at->format('D j M Y') }}</x-site.eyebrow>
@@ -111,9 +115,9 @@
                         </div>
                     @endif
                 @else
-                    <x-site.eyebrow tone="text-amber">Reunions &amp; events</x-site.eyebrow>
-                    <h2 id="reunion-title" class="text-[clamp(36px,4.4vw,60px)] leading-none font-extrabold tracking-tight">Come home to the department</h2>
-                    <p class="max-w-lg text-lg leading-relaxed text-mist">Batch reunions, lab tours, webinars and field days. Members register online for every gathering.</p>
+                    <x-site.eyebrow tone="text-amber">{{ $eventsCopy['eyebrow'] }}</x-site.eyebrow>
+                    <h2 id="reunion-title" class="text-[clamp(36px,4.4vw,60px)] leading-none font-extrabold tracking-tight">{{ $eventsCopy['title'] }}</h2>
+                    <p class="max-w-lg text-lg leading-relaxed text-mist">{{ $eventsCopy['body'] }}</p>
                     <div class="flex flex-wrap gap-3">
                         <a href="{{ route('events.index') }}" class="flex min-h-13 items-center rounded-xs bg-amber px-6.5 text-[17px] font-bold text-ink no-underline hover:text-ink">See events</a>
                     </div>
@@ -125,9 +129,9 @@
     @if ($latestPosts->isNotEmpty())
         <section aria-labelledby="news-title" class="mx-auto flex max-w-7xl flex-col gap-10 px-4 py-26 sm:px-8">
             <div class="flex flex-col items-center gap-3 text-center">
-                <x-site.eyebrow>From the network</x-site.eyebrow>
-                <h2 id="news-title" class="{{ $sectionTitle }}">News &amp; stories</h2>
-                <p class="max-w-xl text-[17px] leading-relaxed text-body">What alumni are doing and what's new in the department.</p>
+                <x-site.eyebrow>{{ $newsCopy['eyebrow'] }}</x-site.eyebrow>
+                <h2 id="news-title" class="{{ $sectionTitle }}">{{ $newsCopy['title'] }}</h2>
+                <p class="max-w-xl text-[17px] leading-relaxed text-body">{{ $newsCopy['intro'] }}</p>
             </div>
             <ul class="flex flex-col border-t-2 border-ink">
                 @foreach ($latestPosts as $post)
@@ -154,9 +158,9 @@
     <section aria-labelledby="join-title" class="mx-auto max-w-7xl px-4 pt-26 sm:px-8">
         <div class="grid grid-cols-1 items-center gap-10 rounded-sm bg-ink p-8 text-paper sm:p-12 lg:grid-cols-2">
             <div class="flex flex-col gap-4">
-                <x-site.eyebrow tone="text-amber">Membership</x-site.eyebrow>
-                <h2 id="join-title" class="text-[clamp(32px,3.6vw,48px)] leading-[1.04] font-extrabold tracking-tight">Your degree came with a network. Claim it.</h2>
-                <p class="max-w-lg text-[17px] leading-relaxed text-mist">Students join free as associates. Graduates choose a yearly or a life membership.</p>
+                <x-site.eyebrow tone="text-amber">{{ $join['eyebrow'] }}</x-site.eyebrow>
+                <h2 id="join-title" class="text-[clamp(32px,3.6vw,48px)] leading-[1.04] font-extrabold tracking-tight">{{ $join['title'] }}</h2>
+                <p class="max-w-lg text-[17px] leading-relaxed text-mist">{{ $join['body'] }}</p>
                 <div class="flex flex-wrap gap-3 pt-2">
                     <a href="{{ route('register') }}" class="flex min-h-13 items-center rounded-xs bg-amber px-6.5 text-[17px] font-bold text-ink no-underline hover:text-ink">Register now</a>
                     <a href="{{ route('membership') }}" class="flex min-h-13 items-center rounded-xs border-[1.5px] border-mist-dim px-6.5 text-[17px] font-semibold text-paper no-underline hover:text-amber">Compare memberships</a>
@@ -179,9 +183,9 @@
     </section>
 
     <section aria-labelledby="social-title" class="mx-auto flex max-w-7xl flex-col items-center gap-4 px-4 pt-24 pb-26 text-center sm:px-8">
-        <x-site.eyebrow>Stay in touch</x-site.eyebrow>
-        <h2 id="social-title" class="text-[clamp(30px,3.4vw,44px)] leading-[1.05] font-extrabold tracking-tight">Questions? Write to us.</h2>
-        <p class="max-w-lg text-[17px] leading-relaxed text-body">Membership, reunions or your directory profile — the committee replies by email.</p>
+        <x-site.eyebrow>{{ $contactCopy['eyebrow'] }}</x-site.eyebrow>
+        <h2 id="social-title" class="text-[clamp(30px,3.4vw,44px)] leading-[1.05] font-extrabold tracking-tight">{{ $contactCopy['title'] }}</h2>
+        <p class="max-w-lg text-[17px] leading-relaxed text-body">{{ $contactCopy['body'] }}</p>
         <a href="{{ route('contact') }}" class="mt-2 flex min-h-12 items-center rounded-xs bg-forest px-6 text-base font-bold text-paper no-underline hover:bg-ink hover:text-paper">Contact the association</a>
         <x-site.social-links class="justify-center pt-2" />
     </section>

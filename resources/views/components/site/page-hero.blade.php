@@ -8,7 +8,7 @@
         </nav>
         <h1 id="page-title" class="max-w-4xl text-[clamp(44px,5.6vw,84px)] leading-[0.98] font-extrabold tracking-tight text-balance">{{ $title }}</h1>
         @if ($intro)
-            <p class="max-w-2xl text-[19px] leading-relaxed text-mist">{{ $intro }}</p>
+            <p class="text-[19px] leading-relaxed text-mist">{{ $intro }}</p>
         @endif
         {{ $slot }}
     </div>

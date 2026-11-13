@@ -20,7 +20,8 @@
             </nav>
             <nav aria-label="Engage" class="flex flex-col gap-2.5 text-[15px]">
                 <span class="font-mono text-xs tracking-widest text-amber uppercase">Engage</span>
-                <a href="{{ route('events.index') }}" class="text-mist no-underline hover:text-amber">Events &amp; reunions</a>
+                <a href="{{ route('events.index') }}" class="text-mist no-underline hover:text-amber">Events</a>
+                <a href="{{ route('gallery.index') }}" class="text-mist no-underline hover:text-amber">Gallery</a>
                 <a href="{{ route('directory') }}" class="text-mist no-underline hover:text-amber">Alumni directory</a>
             </nav>
             <nav aria-label="Members" class="flex flex-col gap-2.5 text-[15px]">

@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Storage;
  * @property string $summary
  * @property string|null $description
  * @property list<array{time: string, label: string}>|null $schedule
+ * @property list<array{name: string, role: string, batch?: string|null, phone?: string|null, photo_path?: string|null}>|null $committee
  * @property string|null $cover_image_path
  * @property Carbon $starts_at
  * @property Carbon|null $ends_at
@@ -39,7 +40,7 @@ use Illuminate\Support\Facades\Storage;
  * @property Carbon|null $updated_at
  */
 #[Fillable([
-    'title', 'slug', 'type', 'summary', 'description', 'schedule', 'cover_image_path', 'starts_at', 'ends_at',
+    'title', 'slug', 'type', 'summary', 'description', 'schedule', 'committee', 'cover_image_path', 'starts_at', 'ends_at',
     'venue', 'online_url', 'member_fee', 'guest_fee', 'max_guests', 'capacity', 'registration_closes_at',
     'is_featured', 'published_at',
 ])]
@@ -56,6 +57,7 @@ class Event extends Model
         return [
             'type' => EventType::class,
             'schedule' => 'array',
+            'committee' => 'array',
             'starts_at' => 'datetime',
             'ends_at' => 'datetime',
             'registration_closes_at' => 'datetime',
@@ -66,6 +68,25 @@ class Event extends Model
             'capacity' => 'integer',
             'is_featured' => 'boolean',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        /*
+         * Delete photos one by one, not by the foreign-key cascade, so each
+         * photo's file is removed from storage too.
+         */
+        static::deleting(function (Event $event): void {
+            $event->photos()->each(fn (EventPhoto $photo): ?bool => $photo->delete());
+        });
+    }
+
+    /**
+     * @return HasMany<EventPhoto, $this>
+     */
+    public function photos(): HasMany
+    {
+        return $this->hasMany(EventPhoto::class)->orderBy('sort_order')->orderBy('id');
     }
 
     /**

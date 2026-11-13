@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\SitePage;
 use App\Models\Event;
 use App\Models\MembershipPlan;
 use App\Models\Post;
@@ -15,6 +16,7 @@ class HomeController extends Controller
         $featuredEvent = $upcomingEvents->firstWhere('is_featured', true) ?? $upcomingEvents->first();
 
         return view('pages.home', [
+            'content' => SitePage::Home->content(),
             'plans' => MembershipPlan::query()->active()->where('price', '>', 0)->get(),
             'featuredEvent' => $featuredEvent,
             'latestPosts' => Post::query()->published()->limit(4)->get(),

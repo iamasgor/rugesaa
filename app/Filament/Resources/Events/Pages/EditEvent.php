@@ -10,6 +10,15 @@ class EditEvent extends EditRecord
 {
     protected static string $resource = EventResource::class;
 
+    /**
+     * The Photos and Attendees tabs embed their own tables, whose search and
+     * modal forms must not sit inside the event's <form> element.
+     */
+    public function hasFormWrapper(): bool
+    {
+        return false;
+    }
+
     protected function getHeaderActions(): array
     {
         return [

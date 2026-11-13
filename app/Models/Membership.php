@@ -167,9 +167,12 @@ class Membership extends Model implements Payable
         $this->update(['status' => MembershipStatus::PendingVerification]);
     }
 
-    public function approve(User $admin): void
+    /**
+     * Activate a verified membership; the committee may backdate it when entering an existing member.
+     */
+    public function approve(User $admin, ?CarbonInterface $startsAt = null): void
     {
-        $this->activate(startsAt: now(), verifiedBy: $admin);
+        $this->activate(startsAt: $startsAt ?? now(), verifiedBy: $admin);
     }
 
     /**
