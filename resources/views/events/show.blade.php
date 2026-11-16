@@ -49,6 +49,18 @@
                     </div>
                 </section>
             @endif
+
+            <section aria-labelledby="registrations-title" class="flex flex-col gap-4">
+                <h2 id="registrations-title" class="text-[28px] font-extrabold">Who's registered</h2>
+                <dl class="grid grid-cols-1 gap-px overflow-hidden rounded-sm border border-line bg-line sm:grid-cols-3">
+                    @foreach (['total' => 'Registered', 'life' => 'Life members', 'general' => 'General members'] as $key => $label)
+                        <div class="flex flex-col-reverse gap-2 bg-card p-6">
+                            <dt class="text-[15px] text-muted">{{ $label }}</dt>
+                            <dd @class(['text-[44px] leading-none font-extrabold', 'text-forest' => $key === 'total', 'text-amber-deep' => $key !== 'total'])>{{ number_format($registrationCounts[$key]) }}</dd>
+                        </div>
+                    @endforeach
+                </dl>
+            </section>
         </div>
 
         <aside aria-label="Registration" class="flex flex-[1_1_340px] flex-col gap-5 rounded-sm border border-line bg-card p-6 lg:sticky lg:top-6">

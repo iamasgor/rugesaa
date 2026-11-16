@@ -100,7 +100,7 @@
                     <h2 id="reunion-title" class="text-[clamp(36px,4.4vw,60px)] leading-none font-extrabold tracking-tight">{{ $featuredEvent->title }}</h2>
                     <p class="max-w-lg text-lg leading-relaxed text-mist">{{ $featuredEvent->summary }} {{ $featuredEvent->venue }}.</p>
                     <div class="flex flex-wrap gap-3">
-                        <a href="{{ route('events.show', $featuredEvent) }}" class="flex min-h-13 items-center rounded-xs bg-amber px-6.5 text-[17px] font-bold text-ink no-underline hover:text-ink">RSVP now</a>
+                        <a href="{{ route('events.show', $featuredEvent) }}" class="flex min-h-13 items-center rounded-xs bg-amber px-6.5 text-[17px] font-bold text-ink no-underline hover:text-ink">Register now</a>
                         <a href="{{ route('events.index') }}" class="flex min-h-13 items-center rounded-xs border-[1.5px] border-mist-dim px-6.5 text-[17px] font-semibold text-paper no-underline hover:text-amber">All events</a>
                     </div>
                     @if ($moreEvents->isNotEmpty())

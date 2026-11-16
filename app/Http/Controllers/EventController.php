@@ -73,6 +73,7 @@ class EventController extends Controller
             'event' => $event,
             'registration' => $registration,
             'seatsLeft' => $event->seatsLeft(),
+            'registrationCounts' => $event->registrationCounts(),
             'photos' => $event->photos()->get(),
         ]);
     }

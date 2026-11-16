@@ -33,7 +33,7 @@
                         @if ($registrations->get($featured->id)?->isConfirmed())
                             <span class="flex min-h-13 items-center gap-2 rounded-xs border-[1.5px] border-forest bg-paper-dim px-6 text-[17px] font-bold text-forest">You're going</span>
                         @else
-                            <a href="{{ route('events.show', $featured) }}" class="flex min-h-13 items-center rounded-xs bg-forest px-6.5 text-[17px] font-bold text-paper no-underline hover:bg-ink hover:text-paper">{{ $featured->isFree() ? 'RSVP' : 'RSVP & pay fee' }}</a>
+                            <a href="{{ route('events.show', $featured) }}" class="flex min-h-13 items-center rounded-xs bg-forest px-6.5 text-[17px] font-bold text-paper no-underline hover:bg-ink hover:text-paper">{{ $featured->isFree() ? 'Register' : 'Register & pay fee' }}</a>
                         @endif
                         <a href="{{ route('events.calendar', $featured) }}" class="text-[15px] font-semibold">Add to calendar</a>
                     </div>

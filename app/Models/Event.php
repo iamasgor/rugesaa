@@ -161,6 +161,27 @@ class Event extends Model
             ->sum(DB::raw('1 + guests'));
     }
 
+    /**
+     * Confirmed registrants, split by the plan of the membership they hold now.
+     * Students, guests and registrants without a current membership count only towards the total.
+     *
+     * @return array{total: int, life: int, general: int}
+     */
+    public function registrationCounts(): array
+    {
+        $plans = $this->registrations()
+            ->where('status', EventRegistrationStatus::Confirmed)
+            ->with('user.currentMembership.plan')
+            ->get()
+            ->map(fn (EventRegistration $registration): ?MembershipPlan => $registration->user->currentMembership?->plan);
+
+        return [
+            'total' => $plans->count(),
+            'life' => $plans->filter(fn (?MembershipPlan $plan): bool => $plan !== null && $plan->isLifetime())->count(),
+            'general' => $plans->filter(fn (?MembershipPlan $plan): bool => $plan !== null && ! $plan->isLifetime() && ! $plan->isFree())->count(),
+        ];
+    }
+
     public function seatsLeft(): ?int
     {
         return $this->capacity === null ? null : max(0, $this->capacity - $this->seatsTaken());

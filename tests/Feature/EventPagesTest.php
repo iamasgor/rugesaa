@@ -3,6 +3,8 @@
 use App\Enums\EventType;
 use App\Models\Event;
 use App\Models\EventRegistration;
+use App\Models\Membership;
+use App\Models\MembershipPlan;
 use App\Models\User;
 
 test('the events page lists upcoming published events soonest first', function () {
@@ -96,4 +98,31 @@ test('an event can be added to a calendar', function () {
         ->and($response->getContent())
         ->toContain('SUMMARY:QGIS workshop')
         ->toContain('DTSTART:20261206T040000Z');
+});
+
+test('the event page counts confirmed registrants by membership plan', function () {
+    $event = Event::factory()->create();
+    $life = MembershipPlan::factory()->lifetime()->create(['price' => 10000]);
+    $general = MembershipPlan::factory()->create(['price' => 5000, 'duration_months' => 12]);
+    $student = MembershipPlan::factory()->free()->create();
+
+    $registrantWith = function (MembershipPlan $plan) use ($event): void {
+        $user = User::factory()->create();
+        Membership::factory()->active()->for($user)->for($plan, 'plan')->create(['expires_at' => $plan->isLifetime() ? null : now()->addYear()]);
+        EventRegistration::factory()->for($event)->for($user)->create();
+    };
+
+    $registrantWith($life);
+    $registrantWith($life);
+    $registrantWith($general);
+    $registrantWith($student);
+    EventRegistration::factory()->for($event)->create();
+    EventRegistration::factory()->for($event)->pendingPayment()->create();
+    EventRegistration::factory()->for($event)->cancelled()->create();
+
+    expect($event->registrationCounts())->toBe(['total' => 5, 'life' => 2, 'general' => 1]);
+
+    $this->get(route('events.show', $event))
+        ->assertOk()
+        ->assertSeeInOrder(['5', 'Registered', '2', 'Life members', '1', 'General members']);
 });
