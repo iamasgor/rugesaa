@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Enums\PaymentStatus;
+use App\Models\Donation;
 use App\Models\Membership;
 use App\Models\Payment;
 use Filament\Widgets\ChartWidget;
@@ -28,9 +29,11 @@ class SalesByCategoryChart extends ChartWidget
             ->where('paid_at', '>=', now()->startOfYear())
             ->with(['payable' => fn (MorphTo $payable) => $payable->morphWith([Membership::class => ['plan']])])
             ->get()
-            ->groupBy(fn (Payment $payment): string => $payment->payable instanceof Membership
-                ? $payment->payable->plan->name.' membership'
-                : 'Events')
+            ->groupBy(fn (Payment $payment): string => match (true) {
+                $payment->payable instanceof Membership => $payment->payable->plan->name.' membership',
+                $payment->payable instanceof Donation => 'Donations',
+                default => 'Events',
+            })
             ->map(fn ($payments): int => (int) $payments->sum('amount'))
             ->sortDesc();
 

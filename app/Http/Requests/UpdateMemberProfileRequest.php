@@ -16,7 +16,8 @@ class UpdateMemberProfileRequest extends FormRequest
     }
 
     /**
-     * Batch, student ID, degree and name are verified by the committee, so members cannot edit them here.
+     * Batch, degree and name are verified by the committee, so members cannot edit them here.
+     * The student ID can be added once if it was left out at registration, but not changed after that.
      *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
@@ -30,7 +31,8 @@ class UpdateMemberProfileRequest extends FormRequest
             'organization' => ['nullable', 'string', 'max:255'],
             'sector' => ['required', Rule::enum(Sector::class)],
             'location' => ['nullable', 'string', 'max:255'],
-            'specialization' => ['required', Rule::enum(Specialization::class)],
+            'student_id' => [Rule::excludeIf(filled($this->user()?->profile?->student_id)), 'nullable', 'string', 'max:50'],
+            'specialization' => ['nullable', Rule::enum(Specialization::class)],
             'hall' => ['nullable', 'string', 'max:255'],
             'show_in_directory' => ['boolean'],
             'mentor_opt_in' => ['boolean'],

@@ -14,7 +14,7 @@
     ];
 @endphp
 
-<x-layouts.site :title="$title" active="directory">
+<x-layouts.site :title="$title" active="membership">
     <section aria-label="Your membership" class="bg-ink text-paper">
         <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-10 gap-y-5 px-4 py-8 sm:px-8">
             <div class="flex items-center gap-4.5">

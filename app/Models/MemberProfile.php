@@ -21,9 +21,9 @@ use Illuminate\Support\Facades\Storage;
  * @property string|null $photo_path
  * @property Degree $degree
  * @property string $batch
- * @property string $student_id
+ * @property string|null $student_id
  * @property string|null $hall
- * @property Specialization $specialization
+ * @property Specialization|null $specialization
  * @property string|null $position
  * @property string|null $organization
  * @property Sector $sector

@@ -126,7 +126,7 @@
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <x-form.input name="name" label="Full name *" autocomplete="name" required />
                         <x-form.input name="email" label="Email *" type="email" autocomplete="email" required />
-                        <x-form.input name="phone" label="Mobile" hint="(optional)" type="tel" autocomplete="tel" placeholder="+880" />
+                        <x-form.input name="phone" label="Mobile" hint="(optional)" type="tel" autocomplete="tel" />
                         <x-form.input name="batch" label="Batch / session" hint="(optional)" placeholder="e.g. 2008–09" />
                     </div>
                     <x-form.input name="subject" label="Subject *" required />

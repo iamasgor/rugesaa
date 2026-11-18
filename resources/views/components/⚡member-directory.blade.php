@@ -164,7 +164,9 @@ new class extends Component {
                     @if ($profile->workSummary())
                         <span class="font-semibold text-ink">{{ $profile->workSummary() }}</span>
                     @endif
-                    <span>{{ $profile->specialization->getLabel() }}</span>
+                    @if ($profile->specialization)
+                        <span>{{ $profile->specialization->getLabel() }}</span>
+                    @endif
                     @if ($profile->location)
                         <span class="flex items-center gap-1.5">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>

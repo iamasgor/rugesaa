@@ -29,6 +29,7 @@ class MembersTable
                     ->searchable(),
                 TextColumn::make('profile.student_id')
                     ->label('Student ID')
+                    ->placeholder('—')
                     ->searchable(),
                 TextColumn::make('currentMembership.plan.name')
                     ->label('Membership')

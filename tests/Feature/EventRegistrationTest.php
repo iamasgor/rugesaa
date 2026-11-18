@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\EventRegistrationStatus;
+use App\Enums\EventType;
 use App\Enums\PaymentStatus;
 use App\Models\Event;
 use App\Models\EventRegistration;
@@ -198,7 +199,7 @@ test('a member can resume payment for a held seat', function () {
 test('my events lists the member\'s upcoming registrations', function () {
     $member = eventMember();
     EventRegistration::factory()->for(Event::factory()->state(['title' => 'Going to this']))->for($member)->create();
-    EventRegistration::factory()->for(Event::factory()->state(['title' => 'Cancelled this']))->for($member)->cancelled()->create();
+    EventRegistration::factory()->for(Event::factory()->state(['title' => 'Cancelled this', 'type' => EventType::Webinar]))->for($member)->cancelled()->create();
 
     $this->actingAs($member)
         ->get(route('portal.events'))

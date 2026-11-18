@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\Sector;
+use App\Enums\Specialization;
 use App\Models\MemberProfile;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
@@ -102,4 +103,31 @@ test('members cannot rename themselves through fortify', function () {
     $this->actingAs($user)
         ->put('/user/profile-information', ['name' => 'Changed', 'email' => $user->email])
         ->assertNotFound();
+});
+
+test('a member who registered without a student id or specialization can add them later', function () {
+    $profile = MemberProfile::factory()->create(['student_id' => null, 'specialization' => null]);
+
+    $this->actingAs($profile->user)
+        ->get(route('profile.edit'))
+        ->assertOk()
+        ->assertSee('name="student_id"', false);
+
+    $this->actingAs($profile->user)
+        ->put(route('profile.update'), profileUpdate(['student_id' => '0812345', 'specialization' => 'climate_change']))
+        ->assertRedirect(route('profile.edit'));
+
+    expect($profile->fresh())
+        ->student_id->toBe('0812345')
+        ->specialization->toBe(Specialization::ClimateChange);
+});
+
+test('specialization can be left empty on the profile', function () {
+    $profile = MemberProfile::factory()->create();
+
+    $this->actingAs($profile->user)
+        ->put(route('profile.update'), profileUpdate(['specialization' => '']))
+        ->assertSessionHasNoErrors();
+
+    expect($profile->fresh()->specialization)->toBeNull();
 });

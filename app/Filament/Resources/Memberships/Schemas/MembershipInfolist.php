@@ -39,9 +39,9 @@ class MembershipInfolist
                     ->schema([
                         TextEntry::make('user.profile.degree')->label('Degree'),
                         TextEntry::make('user.profile.batch')->label('Batch'),
-                        TextEntry::make('user.profile.student_id')->label('Student ID')->copyable(),
+                        TextEntry::make('user.profile.student_id')->label('Student ID')->placeholder('—')->copyable(),
                         TextEntry::make('user.profile.hall')->label('Hall')->placeholder('—'),
-                        TextEntry::make('user.profile.specialization')->label('Specialization'),
+                        TextEntry::make('user.profile.specialization')->label('Specialization')->placeholder('—'),
                     ]),
                 Section::make('Work & preferences')
                     ->columns(3)

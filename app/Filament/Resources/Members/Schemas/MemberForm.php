@@ -79,13 +79,11 @@ class MemberForm
                             ->maxLength(20),
                         TextInput::make('student_id')
                             ->label('Student ID')
-                            ->required()
                             ->maxLength(50),
                         TextInput::make('hall')
                             ->maxLength(255),
                         Select::make('specialization')
-                            ->options(Specialization::class)
-                            ->required(),
+                            ->options(Specialization::class),
                         Select::make('sector')
                             ->options(Sector::class)
                             ->required(),

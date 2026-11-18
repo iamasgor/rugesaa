@@ -24,12 +24,14 @@ class SslCommerzGateway
 
     /**
      * Create a pending payment and open a gateway session for it.
+     * Visitors without an account (donors) pass their details as $customer instead of a user.
      *
+     * @param  array{name?: string, email?: string, phone?: string}  $customer  Overrides the user's own details.
      * @return string The SSLCommerz page the customer is sent to.
      *
      * @throws PaymentGatewayException
      */
-    public function initiate(Payable&Model $payable, User $user): string
+    public function initiate(Payable&Model $payable, ?User $user, array $customer = []): string
     {
         $payment = new Payment([
             'amount' => $payable->paymentAmount(),
@@ -41,7 +43,7 @@ class SslCommerzGateway
         $payment->payable()->associate($payable);
         $payment->save();
 
-        $user->loadMissing('profile');
+        $user?->loadMissing('profile');
 
         try {
             $response = Http::asForm()->timeout(30)->post($this->baseUrl().'/gwprocess/v4/api.php', [
@@ -54,10 +56,10 @@ class SslCommerzGateway
                 'fail_url' => route('payments.sslcommerz.fail'),
                 'cancel_url' => route('payments.sslcommerz.cancel'),
                 'ipn_url' => route('payments.sslcommerz.ipn'),
-                'cus_name' => $user->name,
-                'cus_email' => $user->email,
-                'cus_phone' => $user->profile->phone ?? 'N/A',
-                'cus_add1' => $user->profile->location ?? 'Bangladesh',
+                'cus_name' => $customer['name'] ?? $user->name ?? 'Donor',
+                'cus_email' => $customer['email'] ?? $user->email ?? '',
+                'cus_phone' => $customer['phone'] ?? $user?->profile->phone ?? 'N/A',
+                'cus_add1' => $user?->profile->location ?? 'Bangladesh',
                 'cus_city' => 'Rajshahi',
                 'cus_country' => 'Bangladesh',
                 'shipping_method' => 'NO',

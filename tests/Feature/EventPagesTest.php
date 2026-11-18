@@ -30,18 +30,18 @@ test('past events are listed below the upcoming ones, newest first', function ()
 
 test('past events can be filtered by type without hiding upcoming events', function () {
     Event::factory()->create(['title' => 'Upcoming reunion', 'type' => EventType::Reunion]);
-    Event::factory()->past()->create(['title' => 'Old batch reunion', 'type' => EventType::Reunion]);
+    Event::factory()->past()->create(['title' => 'Old field day', 'type' => EventType::FieldDay]);
     Event::factory()->past()->create(['title' => 'Old flood webinar', 'type' => EventType::Webinar]);
 
     $this->get(route('events.index', ['type' => 'webinar']))
         ->assertSee('Upcoming reunion')
         ->assertSee('Old flood webinar')
-        ->assertDontSee('Old batch reunion');
+        ->assertDontSee('Old field day');
 });
 
 test('past events can be filtered by year', function () {
     Event::factory()->past()->create(['title' => 'Meetup in 2024', 'starts_at' => '2024-03-10 10:00', 'ends_at' => null]);
-    Event::factory()->past()->create(['title' => 'Meetup in 2025', 'starts_at' => '2025-03-10 10:00', 'ends_at' => null]);
+    Event::factory()->past()->create(['title' => 'Meetup in 2025', 'type' => EventType::Webinar, 'starts_at' => '2025-03-10 10:00', 'ends_at' => null]);
 
     $this->get(route('events.index', ['year' => 2024]))
         ->assertSee('Meetup in 2024')
@@ -49,7 +49,7 @@ test('past events can be filtered by year', function () {
 });
 
 test('an unknown year is ignored rather than emptying the archive', function () {
-    Event::factory()->past()->create(['title' => 'Meetup in 2025', 'starts_at' => '2025-03-10 10:00', 'ends_at' => null]);
+    Event::factory()->past()->create(['title' => 'Meetup in 2025', 'type' => EventType::Webinar, 'starts_at' => '2025-03-10 10:00', 'ends_at' => null]);
 
     $this->get(route('events.index', ['year' => 1990]))
         ->assertOk()
@@ -125,4 +125,18 @@ test('the event page counts confirmed registrants by membership plan', function 
     $this->get(route('events.show', $event))
         ->assertOk()
         ->assertSeeInOrder(['5', 'Registered', '2', 'Life members', '1', 'General members']);
+});
+
+test('the header reunion menu lists published reunions linking to their pages', function () {
+    $reunion = Event::factory()->create(['title' => 'Silver jubilee reunion', 'type' => EventType::Reunion]);
+    Event::factory()->draft()->create(['title' => 'Draft batch reunion', 'type' => EventType::Reunion]);
+    Event::factory()->create(['title' => 'Climate webinar', 'type' => EventType::Webinar]);
+
+    $this->get(route('contact'))
+        ->assertOk()
+        ->assertSee('Reunion')
+        ->assertSee('Silver jubilee reunion')
+        ->assertSee(route('events.show', $reunion))
+        ->assertDontSee('Draft batch reunion')
+        ->assertDontSee('Climate webinar');
 });

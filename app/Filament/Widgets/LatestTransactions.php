@@ -29,12 +29,17 @@ class LatestTransactions extends TableWidget
                     ->fontFamily('mono')
                     ->size('xs'),
                 TextColumn::make('user.name')
-                    ->label('Member'),
+                    ->label('Member')
+                    ->placeholder('Guest'),
                 TextColumn::make('payable_type')
                     ->label('Item')
                     ->badge()
                     ->color('gray')
-                    ->formatStateUsing(fn (string $state): string => $state === 'membership' ? 'Membership' : 'Event'),
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'membership' => 'Membership',
+                        'donation' => 'Donation',
+                        default => 'Event',
+                    }),
                 TextColumn::make('amount')
                     ->formatStateUsing(fn (int $state): string => 'BDT '.number_format($state))
                     ->weight('semibold')

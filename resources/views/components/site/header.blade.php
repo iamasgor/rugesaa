@@ -1,14 +1,34 @@
 @props(['active' => null])
 
 @php
+    use App\Enums\EventType;
+    use App\Models\Event;
+
+    $reunions = Event::query()
+        ->published()
+        ->where('type', EventType::Reunion)
+        ->orderByDesc('starts_at')
+        ->get(['id', 'title', 'slug', 'starts_at']);
 
     $navigation = [
         ['id' => 'home', 'label' => 'Home', 'href' => route('home')],
         ['id' => 'about', 'label' => 'About', 'href' => route('about')],
-        ['id' => 'events', 'label' => 'Events', 'href' => route('events.index')],
+        [
+            'id' => 'events',
+            'label' => 'Reunion',
+            'children' => $reunions->map(fn (Event $reunion): array => ['label' => $reunion->title, 'href' => route('events.show', $reunion)])->all(),
+            'empty' => 'No reunions yet.',
+            'footer' => ['label' => 'All reunions & events', 'href' => route('events.index')],
+        ],
         ['id' => 'gallery', 'label' => 'Gallery', 'href' => route('gallery.index')],
-        ['id' => 'membership', 'label' => 'Membership', 'href' => route('membership')],
-        ['id' => 'directory', 'label' => 'Directory', 'href' => route('directory')],
+        [
+            'id' => 'membership',
+            'label' => 'Membership',
+            'children' => [
+                ['label' => 'New member', 'href' => route('membership')],
+                ['label' => 'Existing member', 'href' => route('portal')],
+            ],
+        ],
         ['id' => 'news', 'label' => 'News', 'href' => route('news.index')],
     ];
 @endphp
@@ -43,6 +63,29 @@
         </a>
         <nav aria-label="Main" class="flex flex-wrap items-center gap-0.5">
             @foreach ($navigation as $item)
+                @if (isset($item['children']))
+                    <details class="group relative" data-nav-dropdown>
+                        <summary @class([
+                            'flex cursor-pointer list-none items-center gap-1 px-2.5 py-3 text-[15px] [&::-webkit-details-marker]:hidden',
+                            'font-semibold text-ink shadow-[inset_0_-3px_0_var(--color-amber)]' => $active === $item['id'],
+                            'font-medium text-body hover:text-forest' => $active !== $item['id'],
+                        ])>
+                            {{ $item['label'] }}
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="transition-transform group-open:rotate-180"><path d="m6 9 6 6 6-6"></path></svg>
+                        </summary>
+                        <div class="absolute left-0 z-30 mt-1 w-72 max-w-[calc(100vw-2rem)] rounded-sm border border-line bg-paper py-1.5 shadow-lg">
+                            @forelse ($item['children'] as $child)
+                                <a href="{{ $child['href'] }}" class="block px-4 py-2.5 text-[15px] text-ink no-underline hover:bg-paper-dim hover:text-forest">{{ $child['label'] }}</a>
+                            @empty
+                                <p class="px-4 py-2.5 text-[15px] text-muted">{{ $item['empty'] ?? 'Nothing here yet.' }}</p>
+                            @endforelse
+                            @isset($item['footer'])
+                                <a href="{{ $item['footer']['href'] }}" class="mt-1 block border-t border-line px-4 py-2.5 text-[15px] font-semibold text-forest no-underline hover:bg-paper-dim">{{ $item['footer']['label'] }}</a>
+                            @endisset
+                        </div>
+                    </details>
+                    @continue
+                @endif
                 <a href="{{ $item['href'] }}"
                    @if ($active === $item['id']) aria-current="page" @endif
                    @class([
@@ -51,9 +94,7 @@
                        'font-medium text-body hover:text-forest' => $active !== $item['id'],
                    ])>{{ $item['label'] }}</a>
             @endforeach
-            @guest
-                <a href="{{ route('register') }}" class="ml-2.5 flex min-h-11 items-center rounded-xs bg-amber px-5 text-[15px] font-bold text-ink no-underline hover:bg-[#d0952c] hover:text-ink">Register</a>
-            @endguest
+            <a href="{{ route('donate') }}" @if ($active === 'donate') aria-current="page" @endif class="ml-2.5 flex min-h-11 items-center rounded-xs bg-amber px-5 text-[15px] font-bold text-ink no-underline hover:bg-[#d0952c] hover:text-ink">Donation</a>
         </nav>
     </div>
 </header>

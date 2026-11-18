@@ -22,6 +22,7 @@ class PaymentsTable
                     ->copyable(),
                 TextColumn::make('user.name')
                     ->label('Member')
+                    ->placeholder('Guest')
                     ->searchable(),
                 TextColumn::make('payable_type')
                     ->label('For')

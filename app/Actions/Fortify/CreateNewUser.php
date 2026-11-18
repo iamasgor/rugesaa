@@ -5,7 +5,6 @@ namespace App\Actions\Fortify;
 use App\Enums\Degree;
 use App\Enums\MembershipStatus;
 use App\Enums\Sector;
-use App\Enums\Specialization;
 use App\Models\MembershipPlan;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
@@ -37,9 +36,7 @@ class CreateNewUser implements CreatesNewUsers
             'photo' => ['nullable', 'image', 'max:2048'],
             'degree' => ['required', Rule::enum(Degree::class)],
             'batch' => ['required', 'string', 'max:20'],
-            'student_id' => ['required', 'string', 'max:50'],
             'hall' => ['nullable', 'string', 'max:255'],
-            'specialization' => ['required', Rule::enum(Specialization::class)],
             'position' => ['nullable', 'string', 'max:255'],
             'organization' => ['nullable', 'string', 'max:255'],
             'sector' => ['required', Rule::enum(Sector::class)],
@@ -71,9 +68,7 @@ class CreateNewUser implements CreatesNewUsers
                 'photo_path' => $photoPath,
                 'degree' => $validated['degree'],
                 'batch' => $validated['batch'],
-                'student_id' => $validated['student_id'],
                 'hall' => $validated['hall'] ?? null,
-                'specialization' => $validated['specialization'],
                 'position' => $validated['position'] ?? null,
                 'organization' => $validated['organization'] ?? null,
                 'sector' => $validated['sector'],

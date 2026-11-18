@@ -70,6 +70,13 @@ class RevenueChart extends ChartWidget
                     'borderColor' => '#E0A43A',
                     'borderRadius' => 4,
                 ],
+                [
+                    'label' => 'Donations',
+                    'data' => $totalFor('donation'),
+                    'backgroundColor' => '#5E8C76',
+                    'borderColor' => '#5E8C76',
+                    'borderRadius' => 4,
+                ],
             ],
             'labels' => $buckets->map(fn (array $bucket): string => $bucket['label'])->all(),
         ];

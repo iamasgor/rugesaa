@@ -132,3 +132,12 @@ test('the home page search box carries the keyword into the directory', function
         ->assertSee('Tasnim Chowdhury')
         ->assertDontSee('Viewer Member</h3>', false);
 });
+
+test('members without a student id or specialization still appear in the directory', function () {
+    activeMember('Arif Hasan', ['student_id' => null, 'specialization' => null]);
+
+    $this->actingAs(activeMember('Nusrat Jahan'))
+        ->get(route('directory'))
+        ->assertOk()
+        ->assertSee('Arif Hasan');
+});

@@ -1,7 +1,6 @@
 @php
     use App\Enums\Degree;
     use App\Enums\Sector;
-    use App\Enums\Specialization;
 
     $optionsFor = fn (string $enum): array => collect($enum::cases())->mapWithKeys(fn ($case) => [$case->value => $case->getLabel()])->all();
     $requestedPlan = $plans->firstWhere('slug', request()->query('plan'));
@@ -46,7 +45,7 @@
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <x-form.input name="name" label="Full name" autocomplete="name" required />
                         <x-form.input name="email" label="Email" type="email" autocomplete="email" required />
-                        <x-form.input name="phone" label="Mobile number" type="tel" autocomplete="tel" placeholder="+880" required />
+                        <x-form.input name="phone" label="Mobile number" type="tel" autocomplete="tel" required />
                         <x-form.input name="photo" label="Profile photo" hint="(optional, max 2 MB)" type="file" accept="image/*" />
                         <x-form.input name="password" label="Password" type="password" autocomplete="new-password" required />
                         <x-form.input name="password_confirmation" label="Confirm password" type="password" autocomplete="new-password" required />
@@ -58,10 +57,8 @@
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <x-form.select name="degree" label="Highest degree from the department" :options="$optionsFor(Degree::class)" />
                         <x-form.input name="batch" label="Batch / session" placeholder="e.g. 2008–09" required />
-                        <x-form.input name="student_id" label="Student ID / registration no." required />
                         <x-form.input name="hall" label="Hall of residence" />
                     </div>
-                    <x-form.select name="specialization" label="Specialization / thesis area" :options="$optionsFor(Specialization::class)" />
                 </fieldset>
 
                 <fieldset class="flex flex-col gap-4.5">

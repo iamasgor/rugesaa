@@ -26,6 +26,9 @@
                     <div class="flex flex-col gap-1"><dt class="text-muted">Name</dt><dd class="font-semibold">{{ $user->name }}</dd></div>
                     <div class="flex flex-col gap-1"><dt class="text-muted">Batch</dt><dd class="font-semibold">{{ $profile->batch }}</dd></div>
                     <div class="flex flex-col gap-1"><dt class="text-muted">Degree</dt><dd class="font-semibold">{{ $profile->degree->getLabel() }}</dd></div>
+                    @if (filled($profile->student_id))
+                        <div class="flex flex-col gap-1"><dt class="text-muted">Student ID</dt><dd class="font-semibold">{{ $profile->student_id }}</dd></div>
+                    @endif
                 </dl>
                 <p class="text-sm text-muted">These were checked against department records. To correct them, <a href="{{ route('contact') }}">contact the association</a>.</p>
             </fieldset>
@@ -51,8 +54,11 @@
                     <x-form.input name="organization" label="Organization" autocomplete="organization" :value="$profile->organization" />
                     <x-form.select name="sector" label="Sector" :options="$optionsFor(Sector::class)" :value="$profile->sector->value" />
                     <x-form.input name="location" label="City & country" :value="$profile->location" />
-                    <x-form.select name="specialization" label="Specialization / thesis area" :options="$optionsFor(Specialization::class)" :value="$profile->specialization->value" />
+                    <x-form.select name="specialization" label="Specialization / thesis area" :options="['' => 'Not set'] + $optionsFor(Specialization::class)" :value="$profile->specialization?->value" />
                     <x-form.input name="hall" label="Hall of residence" :value="$profile->hall" />
+                    @if (blank($profile->student_id))
+                        <x-form.input name="student_id" label="Student ID / registration no." hint="(optional — can't be changed once saved)" />
+                    @endif
                 </div>
             </fieldset>
 

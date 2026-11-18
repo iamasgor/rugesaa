@@ -3,6 +3,7 @@
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DirectoryController;
+use App\Http\Controllers\DonationController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\EventRegistrationController;
 use App\Http\Controllers\GalleryController;
@@ -28,6 +29,8 @@ Route::get('/gallery/{album}', [GalleryController::class, 'show'])->name('galler
 Route::get('/news', [NewsController::class, 'index'])->name('news.index');
 Route::get('/news/{post}', [NewsController::class, 'show'])->name('news.show');
 Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:contact')->name('contact.store');
+Route::get('/donate', [DonationController::class, 'show'])->name('donate');
+Route::post('/donate', [DonationController::class, 'store'])->middleware('throttle:donations')->name('donate.store');
 
 Route::middleware('auth')->group(function () {
     Route::get('/memberships/{membership}/checkout', [MembershipCheckoutController::class, 'show'])->name('memberships.checkout');

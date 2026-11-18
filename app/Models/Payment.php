@@ -14,7 +14,7 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
- * @property int $user_id
+ * @property int|null $user_id
  * @property string $payable_type
  * @property int $payable_id
  * @property int $amount

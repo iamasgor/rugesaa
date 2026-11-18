@@ -19,9 +19,7 @@ function registrationData(MembershipPlan $plan, array $overrides = []): array
         'phone' => '+8801712345678',
         'degree' => 'ms',
         'batch' => '2008-09',
-        'student_id' => '0812345',
         'hall' => 'Begum Rokeya Hall',
-        'specialization' => 'gis_remote_sensing',
         'position' => 'GIS Analyst',
         'organization' => 'CEGIS',
         'sector' => 'development',
@@ -109,4 +107,13 @@ test('registration rejects unknown academic options', function () {
 
     $this->post(route('register'), registrationData($plan, ['degree' => 'diploma', 'sector' => 'space']))
         ->assertSessionHasErrors(['degree', 'sector']);
+});
+
+test('registration does not ask for a student id or specialization', function () {
+    MembershipPlan::factory()->create();
+
+    $this->get(route('register'))
+        ->assertOk()
+        ->assertDontSee('name="student_id"', false)
+        ->assertDontSee('name="specialization"', false);
 });

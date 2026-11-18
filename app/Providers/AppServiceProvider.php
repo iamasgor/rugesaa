@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Donation;
 use App\Models\EventRegistration;
 use App\Models\Membership;
 use App\Models\User;
@@ -41,6 +42,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('view-directory', fn (User $user): bool => $user->hasMemberAccess());
 
         RateLimiter::for('contact', fn (Request $request): Limit => Limit::perHour(5)->by($request->ip()));
+        RateLimiter::for('donations', fn (Request $request): Limit => Limit::perHour(10)->by($request->ip()));
     }
 
     /**
@@ -53,20 +55,13 @@ class AppServiceProvider extends ServiceProvider
         Relation::morphMap([
             'membership' => Membership::class,
             'event_registration' => EventRegistration::class,
+            'donation' => Donation::class,
         ]);
 
         DB::prohibitDestructiveCommands(
             app()->isProduction(),
         );
 
-        Password::defaults(fn (): ?Password => app()->isProduction()
-            ? Password::min(12)
-                ->mixedCase()
-                ->letters()
-                ->numbers()
-                ->symbols()
-                ->uncompromised()
-            : null,
-        );
+        Password::defaults(fn (): Password => Password::min(4));
     }
 }
