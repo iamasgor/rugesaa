@@ -140,3 +140,32 @@ test('the header reunion menu lists published reunions linking to their pages', 
         ->assertDontSee('Draft batch reunion')
         ->assertDontSee('Climate webinar');
 });
+
+test('the header reunion menu shows each date and marks reunions that have not ended as ongoing', function () {
+    Event::factory()->create([
+        'title' => 'Reunion next year',
+        'type' => EventType::Reunion,
+        'starts_at' => now()->addYear(),
+    ]);
+    Event::factory()->create([
+        'title' => 'Reunion last year',
+        'type' => EventType::Reunion,
+        'starts_at' => now()->subYear(),
+        'ends_at' => null,
+    ]);
+
+    $response = $this->get(route('contact'))->assertOk();
+
+    $response->assertSeeInOrder(['Reunion next year', now()->addYear()->format('j M Y'), 'Ongoing', 'Reunion last year', now()->subYear()->format('j M Y')]);
+    expect(substr_count($response->getContent(), '>Ongoing<'))->toBe(1);
+});
+
+test('an event has ended after its end time, or after its start day when it has no end time', function () {
+    $this->travelTo(now()->setTime(12, 0));
+
+    expect(Event::factory()->make(['starts_at' => now()->addMonth(), 'ends_at' => null])->hasEnded())->toBeFalse()
+        ->and(Event::factory()->make(['starts_at' => now()->subHour(), 'ends_at' => now()->addHour()])->hasEnded())->toBeFalse()
+        ->and(Event::factory()->make(['starts_at' => now()->subHour(), 'ends_at' => null])->hasEnded())->toBeFalse()
+        ->and(Event::factory()->make(['starts_at' => now()->subDays(2), 'ends_at' => now()->subDay()])->hasEnded())->toBeTrue()
+        ->and(Event::factory()->make(['starts_at' => now()->subDay(), 'ends_at' => null])->hasEnded())->toBeTrue();
+});

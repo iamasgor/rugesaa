@@ -8,7 +8,7 @@
         ->published()
         ->where('type', EventType::Reunion)
         ->orderByDesc('starts_at')
-        ->get(['id', 'title', 'slug', 'starts_at']);
+        ->get(['id', 'title', 'slug', 'starts_at', 'ends_at']);
 
     $navigation = [
         ['id' => 'home', 'label' => 'Home', 'href' => route('home')],
@@ -16,7 +16,12 @@
         [
             'id' => 'events',
             'label' => 'Reunion',
-            'children' => $reunions->map(fn (Event $reunion): array => ['label' => $reunion->title, 'href' => route('events.show', $reunion)])->all(),
+            'children' => $reunions->map(fn (Event $reunion): array => [
+                'label' => $reunion->title,
+                'href' => route('events.show', $reunion),
+                'date' => $reunion->starts_at->format('j M Y'),
+                'ongoing' => ! $reunion->hasEnded(),
+            ])->all(),
             'empty' => 'No reunions yet.',
             'footer' => ['label' => 'All reunions & events', 'href' => route('events.index')],
         ],
@@ -75,7 +80,17 @@
                         </summary>
                         <div class="absolute left-0 z-30 mt-1 w-72 max-w-[calc(100vw-2rem)] rounded-sm border border-line bg-paper py-1.5 shadow-lg">
                             @forelse ($item['children'] as $child)
-                                <a href="{{ $child['href'] }}" class="block px-4 py-2.5 text-[15px] text-ink no-underline hover:bg-paper-dim hover:text-forest">{{ $child['label'] }}</a>
+                                <a href="{{ $child['href'] }}" class="block px-4 py-2.5 text-[15px] text-ink no-underline hover:bg-paper-dim hover:text-forest">
+                                    <span class="block">{{ $child['label'] }}</span>
+                                    @isset($child['date'])
+                                        <span class="mt-0.5 flex items-center gap-2 font-mono text-xs text-muted">
+                                            {{ $child['date'] }}
+                                            @if ($child['ongoing'])
+                                                <span class="rounded-full bg-forest px-2 py-0.5 font-sans text-[11px] font-bold tracking-wide text-paper uppercase">Ongoing</span>
+                                            @endif
+                                        </span>
+                                    @endisset
+                                </a>
                             @empty
                                 <p class="px-4 py-2.5 text-[15px] text-muted">{{ $item['empty'] ?? 'Nothing here yet.' }}</p>
                             @endforelse

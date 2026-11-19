@@ -133,6 +133,14 @@ class Event extends Model
         return $this->published_at !== null && $this->published_at->isPast();
     }
 
+    /**
+     * Finished. Without an end time, an event runs until the end of its start day.
+     */
+    public function hasEnded(): bool
+    {
+        return ($this->ends_at ?? $this->starts_at->endOfDay())->isPast();
+    }
+
     public function isFree(): bool
     {
         return $this->member_fee === 0 && $this->guest_fee === 0;
